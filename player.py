@@ -2,11 +2,10 @@ import pygame
 
 
 class Player():
-    def __init__(self, x, y):
-        self.image = pygame.transform.scale(character_image, (45, 45))
+    def __init__(self, x, y, image):
+        self.image = pygame.transform.scale(image, (45, 45))
         self.width = 45
         self.height = 45
-        self.max_jump_height
         self.rect = pygame.Rect(0, 0, self.width, self.height)
         self.rect.center = (x, y)
         self.vel_y = 0
@@ -16,8 +15,9 @@ class Player():
         self.is_jumping = False
         self.jump_start_time = 0
         self.jump_height = 0
-        self.jump_max_height = JUMP_HEIGHT
-        self.jump_min_height = MIN_JUMP_HEIGHT
+        self.jump_max_height = 20
+        self.jump_min_height = 5
+        self.gravity
 
     def move(self):
         # reset variables
@@ -34,7 +34,7 @@ class Player():
             self.flip = False
 
         # gravity
-        self.vel_y += GRAVITY
+        self.vel_y += self.gravity
         dy += self.vel_y
 
         # ensure player doesn't go off the edge of the screen
@@ -74,6 +74,6 @@ class Player():
         self.rect.x += dx
         self.rect.y += dy
 
-    def draw(self):
+    def draw(self, window):
         window.blit(pygame.transform.flip(self.image, self.flip, False), (self.rect.x, self.rect.y))
-        pygame.draw.rect(window, WHITE, self.rect, 2)
+        pygame.draw.rect(window, (255, 255, 255), self.rect, 2)
