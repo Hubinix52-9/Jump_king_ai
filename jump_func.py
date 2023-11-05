@@ -1,5 +1,6 @@
 import pygame
 from platforma import Platforma
+from player import Player
 
 # initialize pygame
 pygame.init()
@@ -12,7 +13,7 @@ MIN_JUMP_HEIGHT = 10
 
 
 # creating objects
-p1 = Platforma(100,100,50,50)
+p1 = Platforma(100, 100, 50, 50)
 
 # set frame rate
 clock = pygame.time.Clock()
@@ -26,9 +27,6 @@ pygame.display.set_caption('AI_test')
 character_image = pygame.image.load('assets/ch.png').convert_alpha()
 bg_image = pygame.image.load('assets/bg.jpg').convert_alpha()
 
-# game variables
-GRAVITY = 1
-
 # define colors
 WHITE = (255, 255, 255)
 
@@ -36,8 +34,7 @@ WHITE = (255, 255, 255)
 # player class
 
 
-
-character = Player(SCREEN_WIDTH // 2, SCREEN_HEIGHT - 25)
+character = Player(SCREEN_WIDTH // 2, SCREEN_HEIGHT - 25, character_image, SCREEN_WIDTH, SCREEN_HEIGHT)
 
 # game loop
 running = True
@@ -51,7 +48,8 @@ while running:
     window.blit(bg_image, (0, 0))
 
     # draw sprites
-    character.draw()
+    character.draw(window)
+    p1.draw(window)
 
     # event handler
     for event in pygame.event.get():
