@@ -40,7 +40,7 @@ while running:
 
     clock.tick(FPS)
 
-    character.move()
+    character.make_move()
 
     # draw background
     window.blit(bg_image, (0, 0))
