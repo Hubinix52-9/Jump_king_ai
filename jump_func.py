@@ -13,7 +13,7 @@ MIN_JUMP_HEIGHT = 10
 
 
 # creating objects
-p1 = Platforma(100, 100, 50, 50)
+p1 = Platforma(100, 100, 50, 50, SCREEN_HEIGHT)
 
 # set frame rate
 clock = pygame.time.Clock()
@@ -32,8 +32,6 @@ WHITE = (255, 255, 255)
 
 
 # player class
-
-
 character = Player(SCREEN_WIDTH // 2, SCREEN_HEIGHT - 25, character_image, SCREEN_WIDTH, SCREEN_HEIGHT)
 
 # game loop

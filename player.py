@@ -16,9 +16,9 @@ class Player():
         self.jump_charge = 0
         self.is_jumping = False
         self.jump_start_time = 0
-        self.jump_height = 0
+        self.jump_height = 20
         self.jump_max_height = 20
-        self.jump_min_height = 5
+        self.jump_min_height = 10
         self.gravity = 1
 
     def move(self):
@@ -28,13 +28,12 @@ class Player():
 
         # process keypress
         key = pygame.key.get_pressed()
-        if key[pygame.K_a]:
+        if key[pygame.K_a] and not key[pygame.K_SPACE] and not self.is_jumping:
             dx = -5
             self.flip = True
-        if key[pygame.K_d]:
+        elif key[pygame.K_d] and not key[pygame.K_SPACE] and not self.is_jumping and not self.jumping:
             dx = 5
             self.flip = False
-
         # gravity
         self.vel_y += self.gravity
         dy += self.vel_y
@@ -48,22 +47,22 @@ class Player():
         # check collision with ground
         if self.rect.bottom + dy > self.scr_height:
             dy = 0
-            # self.vel_y = -20
+            self.jumping = False
 
         # Jump logic
-        key = pygame.key.get_pressed()
-        if key[pygame.K_SPACE]:
+        if key[pygame.K_SPACE] and not self.jumping:
             if not self.is_jumping:
+                self.jumping = True
                 self.is_jumping = True
                 self.jump_start_time = pygame.time.get_ticks()
                 self.jump_height = 0
 
             jump_duration = pygame.time.get_ticks() - self.jump_start_time
 
-            if jump_duration < 1000:  # Less than 1 second
+            if jump_duration < 1000:  # Less than 1 second          
                 self.jump_height = self.jump_min_height
-            elif jump_duration < 1500:  # 1 to 1.5 seconds
-                self.jump_height = self.jump_min_height + ((jump_duration - 1000) / 500) * (self.jump_max_height - self.jump_min_height)
+            elif jump_duration > 1000 and jump_duration < 1500:  # 1 to 1.5 seconds
+                self.jump_height = self.jump_min_height + (jump_duration / 1500) * (self.jump_max_height - self.jump_min_height)
             else:  # 1.5 seconds or more
                 self.jump_height = self.jump_max_height
 
@@ -72,7 +71,6 @@ class Player():
             self.vel_y = -self.jump_height  # Set the vertical velocity to the calculated jump height
             self.jump_start_time = 0  # Reset jump start time
 
-        # update rectangle position
         self.rect.x += dx
         self.rect.y += dy
 
