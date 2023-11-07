@@ -18,7 +18,7 @@ class Player():
         self.is_jumping = False
         self.landed = True
         self.jump_height = 20
-        self.jump_max_height = 14
+        self.jump_max_height = 15
         self.jump_min_height = 10
         self.gravity = 0.5
         self.lockkey = False
@@ -53,14 +53,12 @@ class Player():
 
         def on_key_event(e):
             nonlocal space_pressed_time, space_released_time
-            if e.name == "space" and space_pressed_time is None and space_released_time is None and e.event_type == "down": 
+            if e.name == "space" and space_pressed_time is None and space_released_time is None and e.event_type == "down" and not self.charging_jump: 
                 space_pressed_time = time.time()
                 self.charging_jump = True
-                print("charging")
-            elif e.name == "space" and space_released_time is None and space_pressed_time is not None and e.event_type == "up":
+            elif e.name == "space" and space_released_time is None and space_pressed_time is not None and e.event_type == "up" and self.charging_jump:
                 space_released_time = time.time()
                 if space_pressed_time is not None:
-                    print("realised")
                     self.duration = int((space_released_time - space_pressed_time)*1000)
                     self.charging_jump = False
                     space_pressed_time = None
@@ -69,11 +67,11 @@ class Player():
 
         keyboard.hook(on_key_event)
         if not self.charging_jump:
-            self.move(key)
+            self.move(key, self.duration)
     
     
 
-    def move(self, key):
+    def move(self, key, time):
         # reset variables
         dx = 0
         dy = 0
@@ -100,25 +98,25 @@ class Player():
         # Jump logic
         if key[pygame.K_SPACE] and self.landed:
             if not self.is_jumping:
+                print(time)
                 self.landed = False
                 self.is_jumping = True
                 self.jump_height = 0
 
-            if self.duration < 1000:  # Less than 1 second          
+            if time < 1000:  # Less than 1 second          
                 self.jump_height = self.jump_min_height
-            elif self.duration > 1000 and self.duration < 1500:  # 1 to 1.5 seconds
+            elif time > 1000 and time < 1500:  # 1 to 1.5 seconds
                 self.jump_height = self.jump_min_height + (self.duration / 1500) * (self.jump_max_height - self.jump_min_height)
             else:  # 1.5 seconds or more
                 self.jump_height = self.jump_max_height
 
         if self.is_jumping:
             self.is_jumping = False
-            self.set_player_gravity(1)
+            self.set_player_gravity(0.8)
             self.vel_y = -self.jump_height  # Set the vertical velocity to the calculated jump height
         
         self.rect.x += dx  # Położenie w poziomie jest aktualizowane, niezależnie od skoku
         self.rect.y += dy  
-        print(self.jump_height)
 
 
     def draw(self, window):
