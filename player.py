@@ -11,6 +11,7 @@ class Player():
         self.rect = pygame.Rect(0, 0, self.width, self.height)
         self.rect.center = (x, y)
         self.vel_y = 0
+        self.vel_x = 0
         self.scr_width = scr_width
         self.scr_height = scr_height
         self.flip = False
@@ -26,6 +27,9 @@ class Player():
         self.duration = 0
         self.bumped = False
         self.wall_bumped = ""
+        self.jump_distance = 0
+        self.jump_max_distance = 3
+        self.jump_min_distance = 0.5
 
     def get_player_bumped(self):
         return self.bumped
@@ -106,13 +110,13 @@ class Player():
         if not self.landed:
             self.vel_y += self.gravity
             dy += self.vel_y
+            
 
         # ensure player doesn't go off the edge of the screen
         if self.rect.left + dx < 0:
             dx = -self.rect.left
         if self.rect.right + dx > self.scr_width:
             dx = self.scr_width - self.rect.right
-
 
         if time < 1000:  # Less than 1 second          
             self.jump_height = self.jump_min_height
@@ -121,22 +125,43 @@ class Player():
         else:  # 1.5 seconds or more
             self.jump_height = self.jump_max_height
 
+        # Jump horizontal
+        if time < 1000:  # Less than 1 second          
+            self.jump_height = self.jump_min_height
+            self.jump_distance = self.jump_min_distance
+        elif time > 1000 and time < 1500:  # 1 to 1.5 seconds
+            self.jump_height = self.jump_min_height + (self.duration / 1500) * (self.jump_max_height - self.jump_min_height)
+            self.jump_distance = self.jump_min_distance + (self.duration / 1500) * (self.jump_max_distance - self.jump_min_distance)
+        else:  # 1.5 seconds or more
+            self.jump_height = self.jump_max_height
+            self.jump_distance = self.jump_max_distance
+
         # Jump logic
         if key[pygame.K_SPACE] and self.landed:
             if not self.is_jumping:
                 self.landed = False
                 self.is_jumping = True
                 
-
-        if self.is_jumping and not self.bumped:
-            self.is_jumping = False
-            self.set_player_gravity(0.8)
-            self.vel_y = -self.jump_height  
+            if self.is_jumping and not self.bumped:
+                self.is_jumping = False
+                self.set_player_gravity(0.8)
+                self.vel_y = -self.jump_height  
             
         if self.is_jumping and self.bumped and self.wall_bumped == "bottom":
             self.is_jumping = False
             self.set_player_gravity(3)
             self.vel_y = -self.jump_height 
+        
+        if key[pygame.K_SPACE] and key[pygame.K_a] and self.landed:
+            if not self.is_jumping:
+                self.landed = False
+                self.is_jumping = True
+            
+            if self.is_jumping and not self.bumped:
+                self.is_jumping = False
+                self.set_player_gravity(0.8)
+                self.vel_y = -self.jump_height  
+                self.vel_x = -self.jump_distance
         
         self.rect.x += dx 
         self.rect.y += dy  
