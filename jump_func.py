@@ -12,25 +12,32 @@ def check_collision(hero, list_of_objects):
         obj = list_of_objects.getObject(x)
         obj_rect = obj.get_rect()
         obj_width = obj.get_width()
-        obj_height = obj.get_height()
         cond1 = hero.rect.x >= obj_rect.x and hero_rect.x <= obj_rect.x + obj_width
         cond2 = hero.rect.x + hero_width >= obj_rect.x and hero_rect.x + hero_width <= obj_rect.x + obj_width
 
-        if pygame.Rect.colliderect(hero_rect, obj_rect) and hero.rect.y <= (obj_rect.y + 5):
-            if cond1 or cond2:
-                hero.update_player_y(obj_rect.y - 45)
-                hero.set_landed_flag(True)
+        if pygame.Rect.colliderect(hero_rect, obj_rect) and hero_rect.bottom >= obj_rect.top and hero_rect.top <= obj_rect.top:
+            hero_rect.bottom = obj_rect.top
+            hero.set_landed_flag(True)
+            hero.set_player_wall_bumped(False)
 
-        if hero.rect.y == (obj_rect.y + obj_height):
-            if cond1 or cond2:
-                hero.update_player_y(obj_rect.y  + obj_height + 10)
-                hero.set_player_gravity(30)
-                hero.set_landed_flag(False)
+        if hero_rect.top >= obj_rect.top and pygame.Rect.colliderect(hero_rect, obj_rect):
+            hero_rect.top = obj_rect.bottom
+            hero.set_player_bumped(True)
+            hero.set_player_wall_bumped("bottom")
+
+        if hero_rect.left >= obj_rect.right and pygame.Rect.colliderect(hero_rect, obj_rect):
+            hero_rect.left = obj_rect.right
+            hero.set_player_bumped(True)
+            hero.set_player_wall_bumped("right")
+
+        if hero_rect.right <= obj_rect.left and pygame.Rect.colliderect(hero_rect, obj_rect):
+            hero_rect.right = obj_rect.left
+            hero.set_player_bumped(True)
+            hero.set_player_wall_bumped("left")
         
         if hero.rect.y <= obj_rect.y and hero.rect.y >= (obj_rect.y - 45) and (cond1 or cond2):
             flag_if_collision += 1
     if flag_if_collision == 0:
-        hero.set_player_gravity(0.5)
         hero.set_landed_flag(False)
         
 
