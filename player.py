@@ -27,6 +27,12 @@ class Player():
         self.bumped = False
         self.wall_bumped = ""
 
+    def set_player_velocity_y(self, wart):
+        self.vel_y = wart
+    
+    def get_player_velocity_y(self):
+        return self.vel_y
+        
     def get_player_bumped(self):
         return self.bumped
     
