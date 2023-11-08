@@ -31,6 +31,12 @@ class Player():
         self.jump_max_distance = 3
         self.jump_min_distance = 0.5
 
+    def set_player_velocity_y(self, wart):
+        self.vel_y = wart
+    
+    def get_player_velocity_y(self):
+        return self.vel_y
+        
     def get_player_bumped(self):
         return self.bumped
     

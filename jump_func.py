@@ -20,9 +20,11 @@ def check_collision(hero, list_of_objects):
             hero.set_landed_flag(True)
             hero.set_player_wall_bumped(False)
 
-        if hero_rect.top >= obj_rect.top and pygame.Rect.colliderect(hero_rect, obj_rect):
-            hero_rect.top = obj_rect.bottom
+        if hero_rect.top >= obj_rect.top and pygame.Rect.colliderect(hero_rect, obj_rect) and not hero.get_player_bumped():
+            hero_rect.top = obj_rect.bottom+2
+            print("bottom collision")
             hero.set_player_bumped(True)
+            hero.set_player_velocity_y(1)
             hero.set_player_wall_bumped("bottom")
 
         if hero_rect.left >= obj_rect.right and pygame.Rect.colliderect(hero_rect, obj_rect):
