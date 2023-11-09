@@ -6,43 +6,41 @@ from list_of_platforms import List_of_objects
 
 def check_collision(hero, list_of_objects):
     hero_rect = hero.get_player_rect()
-    hero_width = hero.get_player_width()
-    flag_if_collision = 0
+    flag_if_collision = False
     for x in range(list_of_platforms.getNumber()):
-        obj = list_of_objects.getObject(x)
-        obj_rect = obj.get_rect()
-        obj_width = obj.get_width()
-        cond1 = hero.rect.x >= obj_rect.x and hero_rect.x <= obj_rect.x + obj_width
-        cond2 = hero.rect.x + hero_width >= obj_rect.x and hero_rect.x + hero_width <= obj_rect.x + obj_width
+        obj_rect = list_of_objects.getObject(x).get_rect()
+        cond1 = hero_rect.left >= obj_rect.left and hero_rect.left <= obj_rect.right
+        cond2 = hero_rect.right >= obj_rect.left and hero_rect.right <= obj_rect.right
 
-        if pygame.Rect.colliderect(hero_rect, obj_rect) and hero_rect.bottom >= obj_rect.top and hero_rect.top <= obj_rect.top:
-            hero_rect.bottom = obj_rect.top
-            hero.set_landed_flag(True)
-            hero.set_player_wall_bumped(False)
+        if pygame.Rect.colliderect(hero_rect, obj_rect):
+            # collision with right wall 
+            if hero_rect.right >= obj_rect.left and hero_rect.left <= obj_rect.left:
+                hero.set_player_velocity_x(-hero.get_player_velocity_x()/2)
+                print("right")
+            
+            # collision with left wall 
+            if hero_rect.left <= obj_rect.right and hero_rect.right >= obj_rect.right:
+                hero.set_player_velocity_x(-hero.get_player_velocity_x()/2)
+                print("left")
 
-        if hero_rect.top >= obj_rect.top and pygame.Rect.colliderect(hero_rect, obj_rect) and not hero.get_player_bumped():
-            hero_rect.top = obj_rect.bottom+2
-            print("bottom collision")
-            hero.set_player_bumped(True)
-            hero.set_player_velocity_y(1)
-            hero.set_player_wall_bumped("bottom")
+            # collision with upper wall
+            if hero_rect.top <= obj_rect.top and obj_rect.top - hero_rect.top >= 25:
+                hero_rect.bottom = obj_rect.top
+                hero.set_landed_flag(True)
+                hero.set_player_velocity_x(0)
 
-        if hero_rect.left >= obj_rect.right and pygame.Rect.colliderect(hero_rect, obj_rect):
-            hero_rect.left = obj_rect.right
-            hero.set_player_bumped(True)
-            hero.set_player_wall_bumped("right")
+            # collision with bottom wall
+            if hero_rect.bottom >= obj_rect.bottom and hero_rect.bottom - obj_rect.bottom >= 25:
+                hero.set_player_velocity_y(-hero.get_player_velocity_y()/2)
+                hero.set_player_velocity_x(hero.get_player_velocity_x()/2)
+                hero_rect.top = obj_rect.bottom
+                print("bottom")
 
-        if hero_rect.right <= obj_rect.left and pygame.Rect.colliderect(hero_rect, obj_rect):
-            hero_rect.right = obj_rect.left
-            hero.set_player_bumped(True)
-            hero.set_player_wall_bumped("left")
-        
-        if hero.rect.y <= obj_rect.y and hero.rect.y >= (obj_rect.y - 45) and (cond1 or cond2):
-            flag_if_collision += 1
-    if flag_if_collision == 0:
+        if hero_rect.bottom <= obj_rect.top and hero_rect.bottom >= obj_rect.top-45 and (cond1 or cond2):
+            flag_if_collision = True
+    if not flag_if_collision:
         hero.set_landed_flag(False)
-        
-
+    
 # initialize pygame
 pygame.init()
 SCREEN_WIDTH = 680
@@ -50,14 +48,18 @@ SCREEN_HEIGHT = 680
 list_of_platforms = List_of_objects()
 
 # creating objects
-down = Platforma(5, SCREEN_HEIGHT-5, SCREEN_WIDTH-5, 100)
-p1 = Platforma(100, SCREEN_HEIGHT-222, 150, 25)
-p2 = Platforma(400, SCREEN_HEIGHT-300, 150, 25)
+down = Platforma(0, SCREEN_HEIGHT, SCREEN_WIDTH, 100)
+#p1 = Platforma(150, SCREEN_HEIGHT-150, 150, 25)
+p2 = Platforma(300, SCREEN_HEIGHT-200, 150, 25)
+p3 = Platforma(250, SCREEN_HEIGHT-450, 200, 25)
+p4 = Platforma(0, SCREEN_HEIGHT-300, 250, 25)
 
 # adding platforms to list
 list_of_platforms.add(down)
-list_of_platforms.add(p1)
+#list_of_platforms.add(p1)
 list_of_platforms.add(p2)
+list_of_platforms.add(p3)
+list_of_platforms.add(p4)
 
 
 # set frame rate
