@@ -11,6 +11,10 @@ def check_collision(hero, list_of_objects):
         obj_rect = list_of_objects.getObject(x).get_rect()
         cond1 = hero_rect.left >= obj_rect.left and hero_rect.left <= obj_rect.right
         cond2 = hero_rect.right >= obj_rect.left and hero_rect.right <= obj_rect.right
+        cond3 = abs(obj_rect.left - hero_rect.right) > abs(obj_rect.top - hero_rect.bottom)
+        cond4 = abs(obj_rect.left - hero_rect.right) > abs(obj_rect.bottom - hero_rect.top)
+        cond5 = abs(obj_rect.right - hero_rect.left) > abs(obj_rect.top - hero_rect.bottom)
+        cond6 = abs(obj_rect.right - hero_rect.left) > abs(obj_rect.bottom - hero_rect.top)
 
         if pygame.Rect.colliderect(hero_rect, obj_rect):
             # collision with right wall 
@@ -24,7 +28,7 @@ def check_collision(hero, list_of_objects):
                 print("left")
 
             # collision with upper wall
-            if hero_rect.top <= obj_rect.top and obj_rect.top - hero_rect.top >= 25:
+            if hero_rect.top <= obj_rect.top and obj_rect.top - hero_rect.top >= 25 and (cond3 or cond5):
                 hero_rect.bottom = obj_rect.top
                 hero.set_landed_flag(True)
                 hero.set_player_velocity_x(0)
