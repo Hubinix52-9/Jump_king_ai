@@ -163,7 +163,6 @@ class Player():
 
         # Jump logic
         # up jump
-        print(self.vel_x)
         if key[pygame.K_SPACE] and not key[pygame.K_a] and not key[pygame.K_d] and self.landed:
             if not self.is_jumping:
                 self.direction = "UP"
