@@ -4,7 +4,7 @@ import time
 
 
 class Player():
-    def __init__(self, x, y, image, scr_width, scr_height):
+    def __init__(self, x, y, image, scr_width, scr_height, current_map):
         self.width = 44
         self.height = 44
         self.hero_image = image
@@ -29,6 +29,7 @@ class Player():
         self.jump_min_distance = 11
         self.direction = ''
         self.changed = False
+        self.current_map = current_map
 
     def get_player_jumping(self):
         return self.is_jumping
@@ -76,6 +77,9 @@ class Player():
         self.is_jumping = wart
 
     def get_player_width(self):
+        return self.height
+
+    def get_player_height(self):
         return self.height
 
     def get_player_rect(self):

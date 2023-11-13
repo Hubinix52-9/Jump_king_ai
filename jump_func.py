@@ -44,6 +44,9 @@ def check_collision(hero, list_of_objects):
     if not flag_if_collision:
         hero.set_landed_flag(False)
 
+#current map settings
+current_map = 1
+
 
 # initialize pygame
 pygame.init()
@@ -85,7 +88,7 @@ WHITE = (255, 255, 255)
 
 
 # player class
-character = Player(SCREEN_WIDTH // 2, 100, character_image, SCREEN_WIDTH, SCREEN_HEIGHT)
+character = Player(SCREEN_WIDTH // 2, 100, character_image, SCREEN_WIDTH, SCREEN_HEIGHT, current_map)
 
 # game loop
 running = True 
@@ -94,6 +97,90 @@ while running:
     clock.tick(FPS)
     character.make_move()
     check_collision(character, Map)
+
+    # map tracing
+    if character.get_player_rect().top < 0:
+        current_map += 1
+        print(f"Przejście do mapy {current_map}")
+        character.update_player_y(SCREEN_HEIGHT - character.get_player_height() * 2)  
+
+        if current_map == 2:
+            Map.clear()
+
+            new_p1 = Platforma(100, SCREEN_HEIGHT-250, 150, 25)
+            new_p2 = Platforma(0, SCREEN_HEIGHT-100, 150, 25)
+            new_p3 = Platforma(250, SCREEN_HEIGHT-550, 200, 25)
+            new_p4 = Platforma(300, SCREEN_HEIGHT-450, 250, 25)
+            
+            Map.add(new_p1)
+            Map.add(new_p2)
+            Map.add(new_p3)
+            Map.add(new_p4)
+
+            bg_image = pygame.image.load('assets/test.jpg').convert_alpha()
+            bg_image_last = pygame.transform.scale(bg_image, (SCREEN_WIDTH, SCREEN_HEIGHT))
+
+        if current_map == 3:
+            Map.clear()
+
+            new_p1 = Platforma(250, SCREEN_HEIGHT-550, 100, 25)
+            new_p2 = Platforma(100, SCREEN_HEIGHT-450, 75, 25)
+            new_p3 = Platforma(500, SCREEN_HEIGHT-250, 150, 10)
+            new_p4 = Platforma(50, SCREEN_HEIGHT-100, 150, 25)
+            
+            
+            Map.add(new_p1)
+            Map.add(new_p2)
+            Map.add(new_p3)
+            Map.add(new_p4)
+
+            bg_image = pygame.image.load('assets/test2.jpg').convert_alpha()
+            bg_image_last = pygame.transform.scale(bg_image, (SCREEN_WIDTH, SCREEN_HEIGHT))
+
+    if character.get_player_rect().bottom > SCREEN_HEIGHT:
+        # Zmiana na poprzednią mapę w dół
+        if current_map > 1:
+            current_map -= 1
+            print(f"Przejście do poprzedniej mapy {current_map}")
+            character.update_player_y(0)  # Umieść gracza na górze ekranu
+
+            if current_map == 1:
+
+                # Tworzenie nowej mapy
+                # Map = Map()
+                Map.clear()
+                # creating objects
+                down = Platforma(0, SCREEN_HEIGHT, SCREEN_WIDTH, 100)
+                p1 = Platforma(150, SCREEN_HEIGHT-150, 150, 25)
+                p2 = Platforma(300, SCREEN_HEIGHT-200, 150, 25)
+                p3 = Platforma(250, SCREEN_HEIGHT-450, 200, 25)
+                p4 = Platforma(0, SCREEN_HEIGHT-300, 250, 25)
+
+                # adding platforms to list
+                Map.add(down)
+                Map.add(p1)
+                Map.add(p2)
+                Map.add(p3)
+                Map.add(p4)
+
+                bg_image = pygame.image.load('assets/bg.jpg').convert_alpha()
+                bg_image_last = pygame.transform.scale(bg_image, (SCREEN_WIDTH, SCREEN_HEIGHT))
+
+            if current_map == 2:
+                Map.clear()
+
+                new_p1 = Platforma(100, SCREEN_HEIGHT-250, 150, 25)
+                new_p2 = Platforma(0, SCREEN_HEIGHT-100, 150, 25)
+                new_p3 = Platforma(250, SCREEN_HEIGHT-550, 200, 25)
+                new_p4 = Platforma(300, SCREEN_HEIGHT-450, 250, 25)
+                
+                Map.add(new_p1)
+                Map.add(new_p2)
+                Map.add(new_p3)
+                Map.add(new_p4)
+
+                bg_image = pygame.image.load('assets/test.jpg').convert_alpha()
+                bg_image_last = pygame.transform.scale(bg_image, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
     # draw background
     window.blit(bg_image_last, (0, 0))
