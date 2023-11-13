@@ -1,13 +1,13 @@
 import pygame
 from platforma import Platforma
 from player import Player
-from list_of_platforms import List_of_objects
+from map import Map
 
 
 def check_collision(hero, list_of_objects):
     hero_rect = hero.get_player_rect()
     flag_if_collision = False
-    for x in range(list_of_platforms.getNumber()):
+    for x in range(list_of_objects.getNumber()):
         obj_rect = list_of_objects.getObject(x).get_rect()
         cond1 = hero_rect.left >= obj_rect.left and hero_rect.left <= obj_rect.right
         cond2 = hero_rect.right >= obj_rect.left and hero_rect.right <= obj_rect.right
@@ -49,7 +49,7 @@ def check_collision(hero, list_of_objects):
 pygame.init()
 SCREEN_WIDTH = 680
 SCREEN_HEIGHT = 680
-list_of_platforms = List_of_objects()
+Map = Map()
 
 # creating objects
 down = Platforma(0, SCREEN_HEIGHT, SCREEN_WIDTH, 100)
@@ -59,11 +59,11 @@ p3 = Platforma(250, SCREEN_HEIGHT-450, 200, 25)
 p4 = Platforma(0, SCREEN_HEIGHT-300, 250, 25)
 
 # adding platforms to list
-list_of_platforms.add(down)
-list_of_platforms.add(p1)
-list_of_platforms.add(p2)
-list_of_platforms.add(p3)
-list_of_platforms.add(p4)
+Map.add(down)
+Map.add(p1)
+Map.add(p2)
+Map.add(p3)
+Map.add(p4)
 
 
 # set frame rate
@@ -93,15 +93,15 @@ while running:
 
     clock.tick(FPS)
     character.make_move()
-    check_collision(character, list_of_platforms)
+    check_collision(character, Map)
 
     # draw background
     window.blit(bg_image_last, (0, 0))
 
     # draw sprites
     character.draw(window)
-    for x in range(list_of_platforms.getNumber()):
-        obj = list_of_platforms.getObject(x)
+    for x in range(Map.getNumber()):
+        obj = Map.getObject(x)
         obj.draw(window)
     
     # event handler
