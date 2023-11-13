@@ -11,42 +11,40 @@ def check_collision(hero, list_of_objects):
         obj_rect = list_of_objects.getObject(x).get_rect()
         cond1 = hero_rect.left >= obj_rect.left and hero_rect.left <= obj_rect.right
         cond2 = hero_rect.right >= obj_rect.left and hero_rect.right <= obj_rect.right
-        cond3 = abs(obj_rect.left - hero_rect.right) > abs(obj_rect.top - hero_rect.bottom)
-        cond4 = abs(obj_rect.left - hero_rect.right) > abs(obj_rect.bottom - hero_rect.top)
-        cond5 = abs(obj_rect.right - hero_rect.left) < abs(obj_rect.top - hero_rect.bottom)
-        cond6 = abs(obj_rect.right - hero_rect.left) < abs(obj_rect.bottom - hero_rect.top)
+        cond3 = abs(obj_rect.left - hero_rect.right) > abs(obj_rect.top - hero_rect.bottom) #left side for top
+        cond4 = abs(obj_rect.left - hero_rect.right) > abs(obj_rect.bottom - hero_rect.top) #left side for bottom
+        cond5 = abs(obj_rect.right - hero_rect.left) > abs(obj_rect.top - hero_rect.bottom) #right side for top
+        cond6 = abs(obj_rect.right - hero_rect.left) > abs(obj_rect.bottom - hero_rect.top) #right side for bottom
+        cond7 = hero_rect.left <= obj_rect.right and hero_rect.right >= obj_rect.right #right wall
+        cond8 = hero_rect.right >= obj_rect.left and hero_rect.left <= obj_rect.left #left wall
 
         if pygame.Rect.colliderect(hero_rect, obj_rect):
             # collision with left wall 
-            if hero_rect.right >= obj_rect.left and hero_rect.left <= obj_rect.left:
-                hero_rect.right = obj_rect.left
+            if cond8:
                 hero.set_player_velocity_x(-hero.get_player_velocity_x()/2)
-                print("left")
             
             # collision with right wall 
-            if hero_rect.left <= obj_rect.right and hero_rect.right >= obj_rect.right:
-                hero_rect.left = obj_rect.right
+            if cond7:
                 hero.set_player_velocity_x(-hero.get_player_velocity_x()/2)
-                print("right")
 
-            # collision with upper wall
-            if hero_rect.top <= obj_rect.top and hero_rect.bottom <= obj_rect.bottom and (cond3 or cond5):
+            # collision with upper wall      
+            if hero_rect.top <= obj_rect.top and hero_rect.bottom <= obj_rect.bottom and cond3 and cond5:
                 hero_rect.bottom = obj_rect.top
                 hero.set_landed_flag(True)
                 hero.set_player_velocity_x(0)
 
             # collision with bottom wall
-            if hero_rect.bottom >= obj_rect.bottom and (cond4 or cond6):   
+            if hero_rect.bottom >= obj_rect.bottom and cond4 and cond6:
                 hero.set_player_velocity_y(-hero.get_player_velocity_y()/2)
                 hero.set_player_velocity_x(hero.get_player_velocity_x()/2)
-                hero_rect.top = obj_rect.bottom
-                print("bottom")
+                hero_rect.top = obj_rect.bottom 
                 
         if hero_rect.bottom <= obj_rect.top and hero_rect.bottom >= obj_rect.top-45 and (cond1 or cond2):
             flag_if_collision = True
     if not flag_if_collision:
         hero.set_landed_flag(False)
-    
+
+
 # initialize pygame
 pygame.init()
 SCREEN_WIDTH = 680
@@ -55,14 +53,14 @@ list_of_platforms = List_of_objects()
 
 # creating objects
 down = Platforma(0, SCREEN_HEIGHT, SCREEN_WIDTH, 100)
-#p1 = Platforma(150, SCREEN_HEIGHT-150, 150, 25)
+p1 = Platforma(150, SCREEN_HEIGHT-150, 150, 25)
 p2 = Platforma(300, SCREEN_HEIGHT-200, 150, 25)
 p3 = Platforma(250, SCREEN_HEIGHT-450, 200, 25)
 p4 = Platforma(0, SCREEN_HEIGHT-300, 250, 25)
 
 # adding platforms to list
 list_of_platforms.add(down)
-#list_of_platforms.add(p1)
+list_of_platforms.add(p1)
 list_of_platforms.add(p2)
 list_of_platforms.add(p3)
 list_of_platforms.add(p4)

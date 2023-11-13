@@ -1,4 +1,4 @@
-class List_of_objects:
+class Map:
     def __init__(self):
         self.list = []
 

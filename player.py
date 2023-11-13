@@ -5,9 +5,10 @@ import time
 
 class Player():
     def __init__(self, x, y, image, scr_width, scr_height):
-        self.width = 45
-        self.height = 45
-        self.image = pygame.transform.scale(image, (self.width, self.height))
+        self.width = 44
+        self.height = 44
+        self.hero_image = image
+        self.image = pygame.transform.scale(self.hero_image, (self.width, self.height))
         self.rect = pygame.Rect(0, 0, self.width, self.height)
         self.rect.center = (x, y)
         self.vel_y = 0
@@ -27,6 +28,7 @@ class Player():
         self.jump_max_distance = 14
         self.jump_min_distance = 11
         self.direction = ''
+        self.changed = False
 
     def get_player_jumping(self):
         return self.is_jumping
@@ -94,6 +96,11 @@ class Player():
             nonlocal space_pressed_time, space_released_time
             if e.name == "space" and space_pressed_time is None and space_released_time is None and e.event_type == "down" and not self.charging_jump: 
                 space_pressed_time = time.time()
+                self.rect.size = (self.width, 30)
+                if not self.changed:
+                    self.rect.bottom +=30
+                    self.changed = True
+                    self.image = pygame.transform.scale(self.hero_image, (self.width, 30))
                 self.charging_jump = True
             elif e.name == "space" and space_released_time is None and space_pressed_time is not None and e.event_type == "up" and self.charging_jump:
                 space_released_time = time.time()
@@ -104,6 +111,11 @@ class Player():
                     space_released_time = None
         keyboard.hook(on_key_event)
         if not self.charging_jump:
+            self.rect.size = (self.width, 44)
+            if self.changed:
+                self.rect.bottom -= 30
+                self.changed = False
+                self.image = pygame.transform.scale(self.hero_image, (self.width, self.height))
             self.move(key, self.duration)
 
     def move(self, key, time):
@@ -112,6 +124,9 @@ class Player():
         if self.landed:
             self.vel_x = 0
             self.vel_y = 0
+            self.direction = None
+        
+        
 
         # walking left
         if key[pygame.K_a] and not key[pygame.K_SPACE] and self.landed:
