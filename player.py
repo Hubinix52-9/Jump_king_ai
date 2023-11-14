@@ -4,7 +4,7 @@ import time
 
 
 class Player():
-    def __init__(self, x, y, image, scr_width, scr_height, current_map):
+    def __init__(self, x, y, image, scr_width, scr_height, current_map, current_map_id):
         self.width = 44
         self.height = 44
         self.hero_image = pygame.image.load(image).convert_alpha()
@@ -29,10 +29,17 @@ class Player():
         self.jump_min_distance = 7
         self.direction = ''
         self.current_map = current_map
+        self.current_map_id = current_map_id
+
+    def set_player_current_map_id(self, id):
+        self.current_map_id = id
+    
+    def get_player_current_map_id(self):
+        return self.current_map_id
 
     def get_player_current_map(self):
         return self.current_map
-    
+
     def set_player_current_map(self, map):
         self.current_map = map
 

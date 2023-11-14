@@ -35,6 +35,7 @@ def check_collision(hero, list_of_objects):
 
             # collision with bottom wall
             if hero_rect.bottom >= obj_rect.bottom and cond4 and cond6:
+                print("collision")
                 hero.set_player_velocity_y(-hero.get_player_velocity_y()/2)
                 hero.set_player_velocity_x(hero.get_player_velocity_x()/2)
                 hero_rect.top = obj_rect.bottom 
@@ -54,7 +55,8 @@ def create_players(number):
                     'assets/ch.png',
                     SCREEN_WIDTH,
                     SCREEN_HEIGHT,
-                    Actual_map)
+                    Actual_map,
+                    current_map)
         list_of_players.append(new_player)
     return list_of_players
 
@@ -69,7 +71,7 @@ clock = pygame.time.Clock()
 FPS = 60
 
 # create game window  
-window = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+window = pygame.display.set_mode((SCREEN_WIDTH+200, SCREEN_HEIGHT))
 pygame.display.set_caption('AI_test')
 
 # maps
@@ -127,52 +129,46 @@ current_map = 0
 Background_image = Actual_map.get_bg()
 
 # players initialization with list
-list_with_characters = create_players(1)
+list_with_characters = create_players(3)
 
 # game loop
 running = True
 while running:
     clock.tick(FPS)
-    if Actual_map is None:
-        Actual_map = Map1
-        for x in list_with_characters:
-            x.set_player_current_map(Actual_map)
 
     for x in list_with_characters:
+        print(x.get_player_rect().top, x.get_player_rect().x)
         x.make_move()
-
-    for x in list_with_characters:
         check_collision(x, x.get_player_current_map())
 
     # map tracing
     for x in list_with_characters:
+        higest_map = []    
+      
         if x.get_player_rect().top < 0:
-            current_map += 1
-            for x in list_with_characters:
-                x.update_player_y(SCREEN_HEIGHT - x.get_player_height() * 2)
-
-            Actual_map = Map_list[current_map]
-            for x in list_with_characters:
-                x.set_player_current_map(Actual_map)
-            Background_image = Actual_map.get_bg()
+            x.set_player_current_map_id(x.get_player_current_map_id() + 1)  
+            x.update_player_y(SCREEN_HEIGHT - x.get_player_height() * 2)
 
         if x.get_player_rect().bottom > SCREEN_HEIGHT:
-            if current_map > 0:
-                current_map -= 1
-                for x in list_with_characters:
-                    x.update_player_y(0)
+            x.set_player_current_map_id(x.get_player_current_map_id() - 1)
+            x.update_player_y(0)
 
-                Actual_map = Map_list[current_map]
-                for x in list_with_characters:
-                    x.set_player_current_map(Actual_map)
-                Background_image = Actual_map.get_bg()
+        x.set_player_current_map(Map_list[x.get_player_current_map_id()])
+
+        for x in list_with_characters:
+            higest_map.append(x.get_player_current_map_id())
+        current_map = max(higest_map)
+        
+        Actual_map = Map_list[current_map]
+        Background_image = Actual_map.get_bg()
 
     # draw background
     window.blit(Background_image, (0, 0))
 
     # draw sprites
     for x in list_with_characters:
-        x.draw(window)
+        if Map_list[current_map] == x.get_player_current_map():
+            x.draw(window)
 
     for x in range(Actual_map.getNumber()):
         obj = Actual_map.getObject(x)
