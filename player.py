@@ -7,7 +7,7 @@ class Player():
     def __init__(self, x, y, image, scr_width, scr_height, current_map):
         self.width = 44
         self.height = 44
-        self.hero_image = image
+        self.hero_image = pygame.image.load(image).convert_alpha()
         self.image = pygame.transform.scale(self.hero_image, (self.width, self.height))
         self.rect = pygame.Rect(0, 0, self.width, self.height)
         self.rect.center = (x, y)
@@ -19,17 +19,22 @@ class Player():
         self.is_jumping = False
         self.landed = True
         self.jump_height = 10
-        self.jump_max_height = 15
-        self.jump_min_height = 10
-        self.gravity = 5
+        self.jump_max_height = 11
+        self.jump_min_height = 6
+        self.gravity = 4
         self.charging_jump = False
         self.duration = 0
         self.jump_distance = 0
-        self.jump_max_distance = 14
-        self.jump_min_distance = 11
+        self.jump_max_distance = 11
+        self.jump_min_distance = 7
         self.direction = ''
-        self.changed = False
         self.current_map = current_map
+
+    def get_player_current_map(self):
+        return self.current_map
+    
+    def set_player_current_map(self, map):
+        self.current_map = map
 
     def get_player_jumping(self):
         return self.is_jumping
@@ -100,12 +105,9 @@ class Player():
             nonlocal space_pressed_time, space_released_time
             if e.name == "space" and space_pressed_time is None and space_released_time is None and e.event_type == "down" and not self.charging_jump: 
                 space_pressed_time = time.time()
-                self.rect.size = (self.width, 30)
-                if not self.changed:
-                    self.rect.bottom +=30
-                    self.changed = True
-                    self.image = pygame.transform.scale(self.hero_image, (self.width, 30))
                 self.charging_jump = True
+                character_image_jumping = pygame.image.load('assets/jumping2.png').convert_alpha()
+                self.image = pygame.transform.scale(character_image_jumping, (self.width, self.height))
             elif e.name == "space" and space_released_time is None and space_pressed_time is not None and e.event_type == "up" and self.charging_jump:
                 space_released_time = time.time()
                 if space_pressed_time is not None:
@@ -115,11 +117,8 @@ class Player():
                     space_released_time = None
         keyboard.hook(on_key_event)
         if not self.charging_jump:
-            self.rect.size = (self.width, 44)
-            if self.changed:
-                self.rect.bottom -= 30
-                self.changed = False
-                self.image = pygame.transform.scale(self.hero_image, (self.width, self.height))
+            character_image_jumping = pygame.image.load('assets/standing2.png').convert_alpha()
+            self.image = pygame.transform.scale(character_image_jumping, (self.width, self.height))
             self.move(key, self.duration)
 
     def move(self, key, time):
@@ -135,11 +134,11 @@ class Player():
         # walking left
         if key[pygame.K_a] and not key[pygame.K_SPACE] and self.landed:
             dx = -4
-            self.flip = True
+            self.flip = False
         # walking right
         if key[pygame.K_d] and not key[pygame.K_SPACE] and self.landed:
             dx = 4
-            self.flip = False
+            self.flip = True
 
         if not self.landed:
             self.vel_y += self.gravity/self.jump_height
@@ -214,7 +213,5 @@ class Player():
         self.rect.x += dx
         self.rect.y += dy
 
-
     def draw(self, window):
         window.blit(pygame.transform.flip(self.image, self.flip, False), (self.rect.x, self.rect.y))
-        pygame.draw.rect(window, (255, 255, 255), self.rect, 2)

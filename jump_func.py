@@ -1,7 +1,7 @@
 import pygame
 from platforma import Platforma
 from player import Player
-from map import Map
+from map_class import Map
 
 
 def check_collision(hero, list_of_objects):
@@ -44,153 +44,140 @@ def check_collision(hero, list_of_objects):
     if not flag_if_collision:
         hero.set_landed_flag(False)
 
-#current map settings
-current_map = 1
+
+def create_players(number):
+    list_of_players = []
+    for x in range(number):
+        new_player = Player(
+                    x*50,
+                    50,
+                    'assets/ch.png',
+                    SCREEN_WIDTH,
+                    SCREEN_HEIGHT,
+                    Actual_map)
+        list_of_players.append(new_player)
+    return list_of_players
 
 
 # initialize pygame
 pygame.init()
 SCREEN_WIDTH = 680
 SCREEN_HEIGHT = 680
-Map = Map()
-
-# creating objects
-down = Platforma(0, SCREEN_HEIGHT, SCREEN_WIDTH, 100)
-p1 = Platforma(150, SCREEN_HEIGHT-150, 150, 25)
-p2 = Platforma(300, SCREEN_HEIGHT-200, 150, 25)
-p3 = Platforma(250, SCREEN_HEIGHT-450, 200, 25)
-p4 = Platforma(0, SCREEN_HEIGHT-300, 250, 25)
-
-# adding platforms to list
-Map.add(down)
-Map.add(p1)
-Map.add(p2)
-Map.add(p3)
-Map.add(p4)
-
 
 # set frame rate
 clock = pygame.time.Clock()
 FPS = 60
 
-# create game window
+# create game window  
 window = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption('AI_test')
 
-# load images
-character_image = pygame.image.load('assets/ch.png').convert_alpha()
-bg_image = pygame.image.load('assets/bg.jpg').convert_alpha()
+# maps
+Map1 = Map('assets/bg.jpg', SCREEN_WIDTH, SCREEN_HEIGHT)
+Map2 = Map('assets/test.jpg', SCREEN_WIDTH, SCREEN_HEIGHT)
+Map3 = Map('assets/test2.jpg', SCREEN_WIDTH, SCREEN_HEIGHT)
+Map4 = Map('assets/bg.jpg', SCREEN_WIDTH, SCREEN_HEIGHT)
 
-bg_image_last = pygame.transform.scale(bg_image, (SCREEN_WIDTH, SCREEN_HEIGHT))
+Map_list = [Map1, Map2, Map3, Map4]
 
-# define colors
-WHITE = (255, 255, 255)
+# map 1
+m1_p1 = Platforma(0, SCREEN_HEIGHT, SCREEN_WIDTH, 100)
+m1_p2 = Platforma(130, SCREEN_HEIGHT-150, 100, 25)
+m1_p3 = Platforma(330, SCREEN_HEIGHT-200, 100, 25)
+m1_p4 = Platforma(350, SCREEN_HEIGHT-400, 200, 25)
+m1_p5 = Platforma(30, SCREEN_HEIGHT-300, 150, 25)
+m1_p6 = Platforma(100, SCREEN_HEIGHT-500, 100, 25)
+m1_p7 = Platforma(320, SCREEN_HEIGHT-600, 100, 25)
 
+Map1.add(m1_p1)
+Map1.add(m1_p2)
+Map1.add(m1_p3)
+Map1.add(m1_p4)
+Map1.add(m1_p5)
+Map1.add(m1_p6)
+Map1.add(m1_p7)
 
-# player class
-character = Player(SCREEN_WIDTH // 2, 100, character_image, SCREEN_WIDTH, SCREEN_HEIGHT, current_map)
+# map 2
+m2_p1 = Platforma(100, SCREEN_HEIGHT-250, 150, 25)
+m2_p2 = Platforma(0, SCREEN_HEIGHT-100, 150, 25)
+m2_p3 = Platforma(250, SCREEN_HEIGHT-550, 200, 25)
+m2_p4 = Platforma(430, SCREEN_HEIGHT-340, 50, 25)
+m2_p5 = Platforma(550, SCREEN_HEIGHT-450, 120, 25)
+
+Map2.add(m2_p1)
+Map2.add(m2_p2)
+Map2.add(m2_p3)
+Map2.add(m2_p4)
+Map2.add(m2_p5)
+
+# map 3
+m3_p1 = Platforma(250, SCREEN_HEIGHT-550, 100, 25)
+m3_p2 = Platforma(100, SCREEN_HEIGHT-450, 75, 25)
+m3_p3 = Platforma(500, SCREEN_HEIGHT-250, 150, 25)
+m3_p4 = Platforma(50, SCREEN_HEIGHT-100, 150, 25)
+
+Map3.add(m3_p1)
+Map3.add(m3_p2)
+Map3.add(m3_p3)
+Map3.add(m3_p4)
+
+# map and image
+Actual_map = Map1
+current_map = 0
+Background_image = Actual_map.get_bg()
+
+# players initialization with list
+list_with_characters = create_players(1)
 
 # game loop
-running = True 
+running = True
 while running:
-
     clock.tick(FPS)
-    character.make_move()
-    check_collision(character, Map)
+    if Actual_map is None:
+        Actual_map = Map1
+        for x in list_with_characters:
+            x.set_player_current_map(Actual_map)
+
+    for x in list_with_characters:
+        x.make_move()
+
+    for x in list_with_characters:
+        check_collision(x, x.get_player_current_map())
 
     # map tracing
-    if character.get_player_rect().top < 0:
-        current_map += 1
-        print(f"Przejście do mapy {current_map}")
-        character.update_player_y(SCREEN_HEIGHT - character.get_player_height() * 2)  
+    for x in list_with_characters:
+        if x.get_player_rect().top < 0:
+            current_map += 1
+            for x in list_with_characters:
+                x.update_player_y(SCREEN_HEIGHT - x.get_player_height() * 2)
 
-        if current_map == 2:
-            Map.clear()
+            Actual_map = Map_list[current_map]
+            for x in list_with_characters:
+                x.set_player_current_map(Actual_map)
+            Background_image = Actual_map.get_bg()
 
-            new_p1 = Platforma(100, SCREEN_HEIGHT-250, 150, 25)
-            new_p2 = Platforma(0, SCREEN_HEIGHT-100, 150, 25)
-            new_p3 = Platforma(250, SCREEN_HEIGHT-550, 200, 25)
-            new_p4 = Platforma(300, SCREEN_HEIGHT-450, 250, 25)
-            
-            Map.add(new_p1)
-            Map.add(new_p2)
-            Map.add(new_p3)
-            Map.add(new_p4)
+        if x.get_player_rect().bottom > SCREEN_HEIGHT:
+            if current_map > 0:
+                current_map -= 1
+                for x in list_with_characters:
+                    x.update_player_y(0)
 
-            bg_image = pygame.image.load('assets/test.jpg').convert_alpha()
-            bg_image_last = pygame.transform.scale(bg_image, (SCREEN_WIDTH, SCREEN_HEIGHT))
-
-        if current_map == 3:
-            Map.clear()
-
-            new_p1 = Platforma(250, SCREEN_HEIGHT-550, 100, 25)
-            new_p2 = Platforma(100, SCREEN_HEIGHT-450, 75, 25)
-            new_p3 = Platforma(500, SCREEN_HEIGHT-250, 150, 10)
-            new_p4 = Platforma(50, SCREEN_HEIGHT-100, 150, 25)
-            
-            
-            Map.add(new_p1)
-            Map.add(new_p2)
-            Map.add(new_p3)
-            Map.add(new_p4)
-
-            bg_image = pygame.image.load('assets/test2.jpg').convert_alpha()
-            bg_image_last = pygame.transform.scale(bg_image, (SCREEN_WIDTH, SCREEN_HEIGHT))
-
-    if character.get_player_rect().bottom > SCREEN_HEIGHT:
-        # Zmiana na poprzednią mapę w dół
-        if current_map > 1:
-            current_map -= 1
-            print(f"Przejście do poprzedniej mapy {current_map}")
-            character.update_player_y(0)  # Umieść gracza na górze ekranu
-
-            if current_map == 1:
-
-                # Tworzenie nowej mapy
-                # Map = Map()
-                Map.clear()
-                # creating objects
-                down = Platforma(0, SCREEN_HEIGHT, SCREEN_WIDTH, 100)
-                p1 = Platforma(150, SCREEN_HEIGHT-150, 150, 25)
-                p2 = Platforma(300, SCREEN_HEIGHT-200, 150, 25)
-                p3 = Platforma(250, SCREEN_HEIGHT-450, 200, 25)
-                p4 = Platforma(0, SCREEN_HEIGHT-300, 250, 25)
-
-                # adding platforms to list
-                Map.add(down)
-                Map.add(p1)
-                Map.add(p2)
-                Map.add(p3)
-                Map.add(p4)
-
-                bg_image = pygame.image.load('assets/bg.jpg').convert_alpha()
-                bg_image_last = pygame.transform.scale(bg_image, (SCREEN_WIDTH, SCREEN_HEIGHT))
-
-            if current_map == 2:
-                Map.clear()
-
-                new_p1 = Platforma(100, SCREEN_HEIGHT-250, 150, 25)
-                new_p2 = Platforma(0, SCREEN_HEIGHT-100, 150, 25)
-                new_p3 = Platforma(250, SCREEN_HEIGHT-550, 200, 25)
-                new_p4 = Platforma(300, SCREEN_HEIGHT-450, 250, 25)
-                
-                Map.add(new_p1)
-                Map.add(new_p2)
-                Map.add(new_p3)
-                Map.add(new_p4)
-
-                bg_image = pygame.image.load('assets/test.jpg').convert_alpha()
-                bg_image_last = pygame.transform.scale(bg_image, (SCREEN_WIDTH, SCREEN_HEIGHT))
+                Actual_map = Map_list[current_map]
+                for x in list_with_characters:
+                    x.set_player_current_map(Actual_map)
+                Background_image = Actual_map.get_bg()
 
     # draw background
-    window.blit(bg_image_last, (0, 0))
+    window.blit(Background_image, (0, 0))
 
     # draw sprites
-    character.draw(window)
-    for x in range(Map.getNumber()):
-        obj = Map.getObject(x)
+    for x in list_with_characters:
+        x.draw(window)
+
+    for x in range(Actual_map.getNumber()):
+        obj = Actual_map.getObject(x)
         obj.draw(window)
-    
+
     # event handler
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
