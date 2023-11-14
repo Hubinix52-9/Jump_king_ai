@@ -1,6 +1,6 @@
 import pygame
-from platforma import Platforma
-from player import Player
+from platform_class import Platforma
+from player_class import Player
 from map_class import Map
 
 
