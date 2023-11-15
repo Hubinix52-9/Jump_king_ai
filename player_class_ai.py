@@ -1,10 +1,11 @@
 import pygame
 import keyboard
 import time
+import pyautogui
 
 
 class Player():
-    def __init__(self, x, y, image, scr_width, scr_height, current_map, current_map_id):
+    def __init__(self, x, y, image, scr_width, scr_height, current_map, current_map_id, moves_list):
         self.width = 44
         self.height = 44
         self.hero_image = pygame.image.load(image).convert_alpha()
@@ -15,6 +16,7 @@ class Player():
         self.vel_x = 0
         self.scr_width = scr_width
         self.scr_height = scr_height
+        self.moves_list = moves_list
         self.flip = False
         self.is_jumping = False
         self.landed = True
@@ -28,9 +30,11 @@ class Player():
         self.jump_max_distance = 11
         self.jump_min_distance = 7
         self.direction = ''
-        #self.list_of_moves = 
         self.current_map = current_map
         self.current_map_id = current_map_id
+
+    def add_player_moves(self, move_list):
+        self.moves_list.append(move_list)
 
     def set_player_current_map_id(self, id):
         self.current_map_id = id
@@ -104,8 +108,7 @@ class Player():
     def set_landed_flag(self, wart):
         self.landed = wart
 
-    def make_move(self):
-        key = pygame.key.get_pressed()
+    def make_move(self, keys, time):
         space_pressed_time = None
         space_released_time = None 
 
@@ -124,6 +127,10 @@ class Player():
                     space_pressed_time = None
                     space_released_time = None
         keyboard.hook(on_key_event)
+        pyautogui.keyDown('space')
+        time.sleep(time)
+        pyautogui.keyUp('space')
+
         if not self.charging_jump:
             character_image_jumping = pygame.image.load('assets/standing2.png').convert_alpha()
             self.image = pygame.transform.scale(character_image_jumping, (self.width, self.height))
@@ -136,6 +143,8 @@ class Player():
             self.vel_x = 0
             self.vel_y = 0
             self.direction = None
+
+        space, left, right = key
         
         
 

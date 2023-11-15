@@ -1,6 +1,6 @@
 import pygame
 from platform_class import Platforma
-from player_class import Player
+from player_class_ai import Player
 from map_class import Map
 import random
 
@@ -51,6 +51,8 @@ def create_players(number):
     player_movments = ["left_up", "up", "right_up", "step_left", "step_right"]
     sek = []
     for x in range(number):
+        for y in range(5):
+            sek.append((random.choice(player_movments), random.randint(1,200)/100))
         new_player = Player(
                     200,
                     50,
@@ -58,7 +60,8 @@ def create_players(number):
                     SCREEN_WIDTH,
                     SCREEN_HEIGHT,
                     Actual_map,
-                    current_map)
+                    current_map,
+                    sek)
         list_of_players.append(new_player)
     return list_of_players
 
@@ -131,7 +134,7 @@ current_map = 0
 Background_image = Actual_map.get_bg()
 
 # players initialization with list
-list_with_characters = create_players(15)
+list_with_characters = create_players(1)
 
 # game loop
 running = True
@@ -139,8 +142,10 @@ while running:
     clock.tick(FPS)
 
     for x in list_with_characters:
-        x.make_move()
-        check_collision(x, x.get_player_current_map())
+        for y in range(5):
+            move_to_make = x.
+            x.move()
+            check_collision(x, x.get_player_current_map())
 
     # map tracing
     for x in list_with_characters:
