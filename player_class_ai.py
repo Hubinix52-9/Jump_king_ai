@@ -1,11 +1,8 @@
 import pygame
-import keyboard
-import time
-import pyautogui
-
+from time import sleep
 
 class Player():
-    def __init__(self, x, y, image, scr_width, scr_height, current_map, current_map_id, moves_list):
+    def __init__(self, x, y, image, scr_width, scr_height, current_map, current_map_id):
         self.width = 44
         self.height = 44
         self.hero_image = pygame.image.load(image).convert_alpha()
@@ -16,7 +13,7 @@ class Player():
         self.vel_x = 0
         self.scr_width = scr_width
         self.scr_height = scr_height
-        self.moves_list = moves_list
+        self.moves_list = [[[ruch, czas]]]
         self.flip = False
         self.is_jumping = False
         self.landed = True
@@ -32,6 +29,13 @@ class Player():
         self.direction = ''
         self.current_map = current_map
         self.current_map_id = current_map_id
+
+    def set_player_new_seq(self, seq):
+        self.moves_list = []
+        self.moves_list.append(seq)
+
+    def get_player_moves(self):
+        return self.moves_list
 
     def add_player_moves(self, move_list):
         self.moves_list.append(move_list)
@@ -109,51 +113,33 @@ class Player():
         self.landed = wart
 
     def make_move(self, keys, time):
-        space_pressed_time = None
-        space_released_time = None 
-
-        def on_key_event(e):
-            nonlocal space_pressed_time, space_released_time
-            if e.name == "space" and space_pressed_time is None and space_released_time is None and e.event_type == "down" and not self.charging_jump: 
-                space_pressed_time = time.time()
-                self.charging_jump = True
-                character_image_jumping = pygame.image.load('assets/jumping2.png').convert_alpha()
-                self.image = pygame.transform.scale(character_image_jumping, (self.width, self.height))
-            elif e.name == "space" and space_released_time is None and space_pressed_time is not None and e.event_type == "up" and self.charging_jump:
-                space_released_time = time.time()
-                if space_pressed_time is not None:
-                    self.duration = int((space_released_time - space_pressed_time)*1000)
-                    self.charging_jump = False
-                    space_pressed_time = None
-                    space_released_time = None
-        keyboard.hook(on_key_event)
-        pyautogui.keyDown('space')
-        time.sleep(time)
-        pyautogui.keyUp('space')
-
-        if not self.charging_jump:
-            character_image_jumping = pygame.image.load('assets/standing2.png').convert_alpha()
+        
+        space, right, left = keys
+        if space:
+            character_image_jumping = pygame.image.load('assets/jumping2.png').convert_alpha()
             self.image = pygame.transform.scale(character_image_jumping, (self.width, self.height))
-            self.move(key, self.duration)
+        character_image_jumping = pygame.image.load('assets/standing2.png').convert_alpha()
+        self.image = pygame.transform.scale(character_image_jumping, (self.width, self.height))
+
+        self.move(keys, time)
 
     def move(self, key, time):
         dx = 0
         dy = 0
+
+        space, right, left = key
+
         if self.landed:
             self.vel_x = 0
             self.vel_y = 0
-            self.direction = None
-
-        space, left, right = key
-        
-        
+            self.direction = None  
 
         # walking left
-        if key[pygame.K_a] and not key[pygame.K_SPACE] and self.landed:
+        if left and not space and self.landed:
             dx = -4
             self.flip = False
         # walking right
-        if key[pygame.K_d] and not key[pygame.K_SPACE] and self.landed:
+        if right and not space and self.landed:
             dx = 4
             self.flip = True
 
@@ -198,21 +184,21 @@ class Player():
 
         # Jump logic
         # up jump
-        if key[pygame.K_SPACE] and not key[pygame.K_a] and not key[pygame.K_d] and self.landed:
+        if space and not left and not right and self.landed:
             if not self.is_jumping:
                 self.direction = "UP"
                 self.landed = False
                 self.is_jumping = True
 
         # left jump
-        if key[pygame.K_SPACE] and key[pygame.K_a] and not key[pygame.K_d] and self.landed:
+        if space and left and not right and self.landed:
             if not self.is_jumping:
                 self.direction = 'LEFT'
                 self.landed = False
                 self.is_jumping = True
 
         # Right jump
-        if key[pygame.K_SPACE] and key[pygame.K_d] and not key[pygame.K_a] and self.landed:
+        if space and right and not left and self.landed:
             if not self.is_jumping:
                 self.direction = 'RIGHT'
                 self.landed = False

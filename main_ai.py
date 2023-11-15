@@ -45,14 +45,17 @@ def check_collision(hero, list_of_objects):
     if not flag_if_collision:
         hero.set_landed_flag(False)
 
+def create_sequence():
+    player_movments = [(1,0,1), (1,0,0), (1,1,0), (0,0,1), (0,1,0)]
+    sek = []
+    for y in range(5):
+        sek.append([random.choice(player_movments), random.randint(1,200)*100])
+    return sek
 
 def create_players(number):
     list_of_players = []
-    player_movments = ["left_up", "up", "right_up", "step_left", "step_right"]
-    sek = []
     for x in range(number):
-        for y in range(5):
-            sek.append((random.choice(player_movments), random.randint(1,200)/100))
+        sek = create_sequence()
         new_player = Player(
                     200,
                     50,
@@ -60,8 +63,8 @@ def create_players(number):
                     SCREEN_WIDTH,
                     SCREEN_HEIGHT,
                     Actual_map,
-                    current_map,
-                    sek)
+                    current_map)
+        new_player.set_player_new_seq(sek)
         list_of_players.append(new_player)
     return list_of_players
 
@@ -134,7 +137,7 @@ current_map = 0
 Background_image = Actual_map.get_bg()
 
 # players initialization with list
-list_with_characters = create_players(1)
+list_with_characters = create_players(5)
 
 # game loop
 running = True
@@ -142,10 +145,13 @@ while running:
     clock.tick(FPS)
 
     for x in list_with_characters:
+        move_list = x.get_player_moves()
         for y in range(5):
-            move_to_make = x.
-            x.move()
+            tup = move_list[0]
+            move_to_make, how_long = tup[y]
+            x.make_move(move_to_make, how_long)
             check_collision(x, x.get_player_current_map())
+        x.set_player_new_seq(create_sequence())
 
     # map tracing
     for x in list_with_characters:
