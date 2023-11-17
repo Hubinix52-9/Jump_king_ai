@@ -2,10 +2,8 @@ import pygame
 from platform_class import Platforma
 from player_class_ai import Player
 from map_class import Map
+from ai_managment import Evolutionary_alghoritm
 import random
-
-
-# szansa na skok 
 
 
 def check_collision(hero, list_of_objects):
@@ -48,16 +46,6 @@ def check_collision(hero, list_of_objects):
     if not flag_if_collision:
         hero.set_landed_flag(False)
 
-def create_sequence():
-    player_movments = [(1,0,1), (1,0,0), (1,1,0), (0,0,1), (0,1,0)]
-    weights = [1,1,1,10,10]
-    sek = []
-    for y in range(5):
-        sek.append([random.choices(player_movments, weights)[0], random.randint(200,2000)])
-    return sek
-
-def create_players(number):
-    
 # initialize pygame
 pygame.init()
 SCREEN_WIDTH = 680
@@ -113,38 +101,63 @@ Map2.add(m2_p5)
 m3_p1 = Platforma(250, SCREEN_HEIGHT-550, 100, 25)
 m3_p2 = Platforma(100, SCREEN_HEIGHT-450, 75, 25)
 m3_p3 = Platforma(500, SCREEN_HEIGHT-250, 150, 25)
-m3_p4 = Platforma(50, SCREEN_HEIGHT-100, 150, 25)
+m3_p4 = Platforma(50, SCREEN_HEIGHT-200, 150, 25)
+final = Platforma(100, SCREEN_HEIGHT-150, 25, 25)
 
 Map3.add(m3_p1)
 Map3.add(m3_p2)
 Map3.add(m3_p3)
-Map3.add(m3_p4) 
+Map3.add(final) 
 
 # map and image
 Actual_map = Map1
 current_map = 0
 Background_image = Actual_map.get_bg()
 
-# players initialization with list
-list_with_characters = create_players(30)
+#ai algh creation
+
+ev_alg = Evolutionary_alghoritm(5)
+ev_alg.create_population(Map1, 0)
 
 # game loop
 running = True
 while running:
     clock.tick(FPS)
-
+    list_with_characters = ev_alg.get_actual_gen()
     for x in list_with_characters:
         move_list = x.get_player_moves()
-        tup = move_list[0]
-        move_to_make, how_long = tup[x.get_player_did_moves()]
+        move_to_make, how_long = move_list[x.get_player_did_moves()]
         space, right, left = move_to_make
         x.make_move(move_to_make, how_long)
         check_collision(x, x.get_player_current_map())
         if (x.get_player_landed() and space and not x.get_player_charging()) or (not x.get_player_steping() and (right or left) and not space):
-            x.set_player_did_moves(x.get_player_did_moves()+1)
-        if x.get_player_did_moves() == 5:
-            x.reset_player_moves()
-            x.set_player_new_seq(create_sequence())
+            if len(move_list)-1 > x.get_player_did_moves():
+                print(x.get_player_did_moves())
+                x.set_player_did_moves(x.get_player_did_moves()+1)
+        all_made_moves = ev_alg.all_made_moves()
+        if all_made_moves:
+            break
+    
+    
+
+    if all_made_moves:
+        ev_alg.fitness_n_selection()
+    
+    fitness_done = ev_alg.get_fitness_done()
+
+    if fitness_done:
+        ev_alg.crossover(Map1, 0)
+    
+    crossover_done = ev_alg.get_crossover_done()
+    
+    if crossover_done:
+        ev_alg.mutation()
+
+    mutation_done = ev_alg.get_mutation_done()
+
+    if mutation_done:
+        ev_alg.prep_for_next_gen()
+
 
     # map tracing
     for x in list_with_characters:

@@ -54,11 +54,7 @@ def create_players(number):
         new_player = Player(
                     200,
                     50,
-<<<<<<< HEAD
                     'assets/standing2.png',
-=======
-                    'assets/standing.png',
->>>>>>> 7e1d613ad735fa11d011cefebf3770bdf974ed65
                     SCREEN_WIDTH,
                     SCREEN_HEIGHT,
                     Actual_map,
