@@ -111,18 +111,19 @@ class Player():
 
         def on_key_event(e):
             nonlocal space_pressed_time, space_released_time
-            if e.name == "space" and space_pressed_time is None and space_released_time is None and e.event_type == "down" and not self.charging_jump: 
-                space_pressed_time = time.time()
-                self.charging_jump = True
-                character_image_jumping = pygame.image.load('assets/jumping2.png').convert_alpha()
-                self.image = pygame.transform.scale(character_image_jumping, (self.width, self.height))
-            elif e.name == "space" and space_released_time is None and space_pressed_time is not None and e.event_type == "up" and self.charging_jump:
-                space_released_time = time.time()
-                if space_pressed_time is not None:
-                    self.duration = int((space_released_time - space_pressed_time)*1000)
-                    self.charging_jump = False
-                    space_pressed_time = None
-                    space_released_time = None
+            if self.landed:
+                if e.name == "space" and space_pressed_time is None and space_released_time is None and e.event_type == "down" and not self.charging_jump: 
+                    space_pressed_time = time.time()
+                    self.charging_jump = True
+                    character_image_jumping = pygame.image.load('assets/jumping2.png').convert_alpha()
+                    self.image = pygame.transform.scale(character_image_jumping, (self.width, self.height))
+                elif e.name == "space" and space_released_time is None and space_pressed_time is not None and e.event_type == "up" and self.charging_jump:
+                    space_released_time = time.time()
+                    if space_pressed_time is not None:
+                        self.duration = int((space_released_time - space_pressed_time)*1000)
+                        self.charging_jump = False
+                        space_pressed_time = None
+                        space_released_time = None
         keyboard.hook(on_key_event)
         if not self.charging_jump:
             character_image_jumping = pygame.image.load('assets/standing2.png').convert_alpha()

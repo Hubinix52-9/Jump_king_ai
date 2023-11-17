@@ -131,7 +131,7 @@ current_map = 0
 Background_image = Actual_map.get_bg()
 
 # players initialization with list
-list_with_characters = create_players(15)
+list_with_characters = create_players(1)
 
 # game loop
 running = True

@@ -5,6 +5,9 @@ from map_class import Map
 import random
 
 
+# szansa na skok 
+
+
 def check_collision(hero, list_of_objects):
     hero_rect = hero.get_player_rect()
     flag_if_collision = False
@@ -47,27 +50,14 @@ def check_collision(hero, list_of_objects):
 
 def create_sequence():
     player_movments = [(1,0,1), (1,0,0), (1,1,0), (0,0,1), (0,1,0)]
+    weights = [1,1,1,10,10]
     sek = []
     for y in range(5):
-        sek.append([random.choice(player_movments), random.randint(1,200)*100])
+        sek.append([random.choices(player_movments, weights)[0], random.randint(200,2000)])
     return sek
 
 def create_players(number):
-    list_of_players = []
-    for x in range(number):
-        sek = create_sequence()
-        new_player = Player(
-                    200,
-                    50,
-                    'assets/ch.png',
-                    SCREEN_WIDTH,
-                    SCREEN_HEIGHT,
-                    Actual_map,
-                    current_map)
-        new_player.set_player_new_seq(sek)
-        list_of_players.append(new_player)
-    return list_of_players
-
+    
 
 # initialize pygame
 pygame.init()
@@ -137,7 +127,7 @@ current_map = 0
 Background_image = Actual_map.get_bg()
 
 # players initialization with list
-list_with_characters = create_players(5)
+list_with_characters = create_players(30)
 
 # game loop
 running = True
@@ -146,12 +136,16 @@ while running:
 
     for x in list_with_characters:
         move_list = x.get_player_moves()
-        for y in range(5):
-            tup = move_list[0]
-            move_to_make, how_long = tup[y]
-            x.make_move(move_to_make, how_long)
-            check_collision(x, x.get_player_current_map())
-        x.set_player_new_seq(create_sequence())
+        tup = move_list[0]
+        move_to_make, how_long = tup[x.get_player_did_moves()]
+        space, right, left = move_to_make
+        x.make_move(move_to_make, how_long)
+        check_collision(x, x.get_player_current_map())
+        if (x.get_player_landed() and space and not x.get_player_charging()) or (not x.get_player_steping() and (right or left) and not space):
+            x.set_player_did_moves(x.get_player_did_moves()+1)
+        if x.get_player_did_moves() == 5:
+            x.reset_player_moves()
+            x.set_player_new_seq(create_sequence())
 
     # map tracing
     for x in list_with_characters:

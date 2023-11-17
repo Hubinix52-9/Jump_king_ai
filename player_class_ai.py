@@ -1,8 +1,8 @@
 import pygame
-from time import sleep
+import time as timeee
 
 class Player():
-    def __init__(self, x, y, image, scr_width, scr_height, current_map, current_map_id):
+    def __init__(self, x, y, image, scr_width, scr_height, current_map, current_map_id, wages):
         self.width = 44
         self.height = 44
         self.hero_image = pygame.image.load(image).convert_alpha()
@@ -13,10 +13,10 @@ class Player():
         self.vel_x = 0
         self.scr_width = scr_width
         self.scr_height = scr_height
-        self.moves_list = [[[ruch, czas]]]
+        self.moves_list = []
         self.flip = False
         self.is_jumping = False
-        self.landed = True
+        self.landed = False
         self.jump_height = 10
         self.jump_max_height = 11
         self.jump_min_height = 6
@@ -29,6 +29,37 @@ class Player():
         self.direction = ''
         self.current_map = current_map
         self.current_map_id = current_map_id
+        self.moves_did = 0
+        self.steping = False
+        self.step = 0
+        self.wages = wages
+
+        self.released_time = None
+        self.space_pressed_time = None
+
+    def player_get_wages(self):
+        return self.wages
+    
+    def player_update_wages(self, wages):
+        self.wages = wages
+
+    def get_player_charging(self):
+        return self.charging_jump
+
+    def get_player_steping(self):
+        return self.steping
+
+    def reset_player_moves(self):
+        self.moves_did = 0
+
+    def get_player_landed(self):
+        return self.landed
+
+    def get_player_did_moves(self):
+        return self.moves_did
+
+    def set_player_did_moves(self, number):
+        self.moves_did = number
 
     def set_player_new_seq(self, seq):
         self.moves_list = []
@@ -112,16 +143,27 @@ class Player():
     def set_landed_flag(self, wart):
         self.landed = wart
 
-    def make_move(self, keys, time):
-        
+    def make_move(self, keys, jump_time):
+        character_image_jumping = None
         space, right, left = keys
-        if space:
-            character_image_jumping = pygame.image.load('assets/jumping2.png').convert_alpha()
+        if self.landed:
+            if space and self.space_pressed_time is None and not self.charging_jump: 
+                self.space_pressed_time = timeee.time()
+                self.charging_jump = True
+                character_image_jumping = pygame.image.load('assets/jumping2.png').convert_alpha()
+                self.image = pygame.transform.scale(character_image_jumping, (self.width, self.height))
+            elif space and self.space_pressed_time is not None and self.charging_jump:
+                self.released_time = timeee.time()
+                duration = (self.released_time - self.space_pressed_time) *1000
+                if duration > jump_time:
+                    self.charging_jump = False
+                    self.space_pressed_time = None
+                    self.released_time = None
+                    character_image_jumping = pygame.image.load('assets/standing2.png').convert_alpha()
+        if not self.charging_jump or not space:
+            character_image_jumping = pygame.image.load('assets/standing2.png').convert_alpha()
             self.image = pygame.transform.scale(character_image_jumping, (self.width, self.height))
-        character_image_jumping = pygame.image.load('assets/standing2.png').convert_alpha()
-        self.image = pygame.transform.scale(character_image_jumping, (self.width, self.height))
-
-        self.move(keys, time)
+            self.move(keys, jump_time)
 
     def move(self, key, time):
         dx = 0
@@ -135,13 +177,28 @@ class Player():
             self.direction = None  
 
         # walking left
-        if left and not space and self.landed:
-            dx = -4
+        if left and not space and self.landed and not self.steping:
+            self.step = -2*time//100
+            self.steping = True
             self.flip = False
+        if left and not space and self.landed and self.steping:
+            dx = -2
+            self.step += 2
+            if self.step > 0:
+                self.steping = False
+
         # walking right
-        if right and not space and self.landed:
-            dx = 4
+        if right and not space and self.landed and not self.steping:
+            self.step = 2*time//100
+            self.steping = True
             self.flip = True
+        if right and not space and self.landed and self.steping:
+            dx = 2
+            self.step -= 2
+            if self.step < 0:
+                self.steping = False
+
+        
 
         if not self.landed:
             self.vel_y += self.gravity/self.jump_height
