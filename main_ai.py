@@ -58,7 +58,6 @@ def create_sequence():
 
 def create_players(number):
     
-
 # initialize pygame
 pygame.init()
 SCREEN_WIDTH = 680

@@ -29,22 +29,28 @@ class Evolutionary_alghoritm():
             sek.append([random.choices(player_movments, wages)[0], random.randint(200,2000)])
         return sek
     
-    def create_population(self, screen_width, screen_height, actual_map, actual_map_id, wages):
+    def create_population(self, actual_map, actual_map_id, how_many, parents=None):
         list_of_players = []
-        for x in range(self.size_of_generation):
-            sek = self.create_moves_seq()
-            new_player = Player(
-                        600,
-                        screen_height-105,
-                        'assets/standing2.png',
-                        screen_width,
-                        screen_height,
-                        actual_map,
-                        actual_map_id,
-                        wages)
-            new_player.set_player_new_seq(sek)
-            list_of_players.append(new_player)
-        self.actual_generation.append(list_of_players)
+        if self.generation > 1 and len(self.best_individuals) > 1 and parents is not None:
+            parent_a, parent_b = parents
+            for x in range(how_many):
+                new_player = Player(
+                            actual_map,
+                            actual_map_id,
+                            random.choice([parent_a.player_get_wages(), parent_b.player_get_wages()]),
+                            random.choice([parent_a.get_player_moves(), parent_b.get_player_moves()]))
+                new_player.player_add_new_seq(self.create_moves_seq())
+                list_of_players.append(new_player)
+            self.actual_generation.append(list_of_players)
+        elif self.generation == 1 and parents is None: 
+            for x in range(self.size_of_generation):
+                new_player = Player(
+                            actual_map,
+                            actual_map_id,
+                            [1,1,1,1,1],
+                            self.create_moves_seq())
+                list_of_players.append(new_player)
+            self.actual_generation.append(list_of_players)
         return list_of_players
     
     def fitness_n_selection(self):
@@ -53,10 +59,18 @@ class Evolutionary_alghoritm():
             if x.get_player_rect().bottom > self.actual_best_score:
                 self.best_individuals.append(x)
     
-    def crossover(self):
+    def crossover(self, actual_map, actual_map_id):
         number_of_individuals = len(self.best_individuals)
         if number_of_individuals > 1:
             if self.best_individuals % 2 == 1:
                 self.best_individuals.remove(number_of_individuals-1)
-                number_of_pairs = number_of_individuals / 2
+            number_of_pairs = int(number_of_individuals / 2)
+            for x in range(0, number_of_individuals, 2):
+                parents = (self.best_individuals[x], self.best_individuals[x+1])
+                self.create_population(actual_map, actual_map_id, (0.6*self.size_of_generation)/number_of_pairs, )
+        if number_of_individuals == 1:
+            parents = (self.best_individuals[0], self.best_individuals[0])
+            self.create_population(actual_map, actual_map_id, (0.6*self.size_of_generation)/number_of_pairs, )
+
+
             

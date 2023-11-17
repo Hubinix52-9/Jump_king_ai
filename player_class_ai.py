@@ -2,18 +2,18 @@ import pygame
 import time as timeee
 
 class Player():
-    def __init__(self, x, y, image, scr_width, scr_height, current_map, current_map_id, wages):
+    def __init__(self, current_map, current_map_id, wages, seq):
         self.width = 44
         self.height = 44
-        self.hero_image = pygame.image.load(image).convert_alpha()
+        self.hero_image = pygame.image.load("assets/standing2.png").convert_alpha()
         self.image = pygame.transform.scale(self.hero_image, (self.width, self.height))
         self.rect = pygame.Rect(0, 0, self.width, self.height)
-        self.rect.center = (x, y)
+        self.scr_width = 680
+        self.scr_height = 680
+        self.rect.center = (500, self.scr_width - 105)
         self.vel_y = 0
         self.vel_x = 0
-        self.scr_width = scr_width
-        self.scr_height = scr_height
-        self.moves_list = []
+        self.moves_list = seq
         self.flip = False
         self.is_jumping = False
         self.landed = False
@@ -36,6 +36,9 @@ class Player():
 
         self.released_time = None
         self.space_pressed_time = None
+
+    def player_add_new_seq(self, seq):
+        self.moves_list.append(seq)
 
     def player_get_wages(self):
         return self.wages
