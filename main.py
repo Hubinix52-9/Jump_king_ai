@@ -54,7 +54,11 @@ def create_players(number):
         new_player = Player(
                     200,
                     50,
+<<<<<<< HEAD
                     'assets/standing2.png',
+=======
+                    'assets/standing.png',
+>>>>>>> 7e1d613ad735fa11d011cefebf3770bdf974ed65
                     SCREEN_WIDTH,
                     SCREEN_HEIGHT,
                     Actual_map,
@@ -77,7 +81,7 @@ window = pygame.display.set_mode((SCREEN_WIDTH+200, SCREEN_HEIGHT))
 pygame.display.set_caption('AI_test')
 
 # maps
-Map1 = Map('assets/bg.jpg', SCREEN_WIDTH, SCREEN_HEIGHT)
+Map1 = Map('assets/block.png', SCREEN_WIDTH, SCREEN_HEIGHT)
 Map2 = Map('assets/test.jpg', SCREEN_WIDTH, SCREEN_HEIGHT)
 Map3 = Map('assets/test2.jpg', SCREEN_WIDTH, SCREEN_HEIGHT)
 Map4 = Map('assets/bg.jpg', SCREEN_WIDTH, SCREEN_HEIGHT)
@@ -173,7 +177,7 @@ while running:
 
     for x in range(Actual_map.getNumber()):
         obj = Actual_map.getObject(x)
-        obj.draw(window)
+        #obj.draw(window)
 
     # event handler
     for event in pygame.event.get():
