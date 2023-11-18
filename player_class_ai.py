@@ -10,7 +10,7 @@ class Player():
         self.rect = pygame.Rect(0, 0, self.width, self.height)
         self.scr_width = 680
         self.scr_height = 680
-        self.rect.center = (500, self.scr_width - 105)
+        self.rect.center = (630, self.scr_width - 105)
         self.vel_y = 0
         self.vel_x = 0
         self.moves_list = []
@@ -66,10 +66,6 @@ class Player():
 
     def set_player_did_moves(self, number):
         self.moves_did = number
-
-    def set_player_new_seq(self, seq):
-        self.moves_list = []
-        self.moves_list.append(seq)
 
     def get_player_moves(self):
         return self.moves_list

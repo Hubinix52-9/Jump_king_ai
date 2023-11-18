@@ -116,7 +116,7 @@ Background_image = Actual_map.get_bg()
 
 #ai algh creation
 
-ev_alg = Evolutionary_alghoritm(5)
+ev_alg = Evolutionary_alghoritm(10)
 ev_alg.create_population(Map1, 0)
 
 # game loop
@@ -124,38 +124,33 @@ running = True
 while running:
     clock.tick(FPS)
     list_with_characters = ev_alg.get_actual_gen()
+
     for x in list_with_characters:
         move_list = x.get_player_moves()
-        move_to_make, how_long = move_list[x.get_player_did_moves()]
+        if len(move_list)-1 == x.get_player_did_moves():
+            move_to_make, how_long = [(0,0,0),0]
+        else:
+            move_to_make, how_long = move_list[x.get_player_did_moves()]
         space, right, left = move_to_make
         x.make_move(move_to_make, how_long)
         check_collision(x, x.get_player_current_map())
         if (x.get_player_landed() and space and not x.get_player_charging()) or (not x.get_player_steping() and (right or left) and not space):
             if len(move_list)-1 > x.get_player_did_moves():
-                print(x.get_player_did_moves())
+                print(len(move_list))
                 x.set_player_did_moves(x.get_player_did_moves()+1)
-        all_made_moves = ev_alg.all_made_moves()
-        if all_made_moves:
-            break
-    
-    
 
-    if all_made_moves:
+    if ev_alg.all_made_moves() and ev_alg.all_landed_func():
         ev_alg.fitness_n_selection()
     
-    fitness_done = ev_alg.get_fitness_done()
-
-    if fitness_done:
+    if ev_alg.get_fitness_done():
+        print("fitness done")
         ev_alg.crossover(Map1, 0)
     
-    crossover_done = ev_alg.get_crossover_done()
-    
-    if crossover_done:
+    if ev_alg.get_crossover_done():
+        print("crossover done")
         ev_alg.mutation()
 
-    mutation_done = ev_alg.get_mutation_done()
-
-    if mutation_done:
+    if ev_alg.get_mutation_done():
         ev_alg.prep_for_next_gen()
 
 
