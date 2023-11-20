@@ -78,8 +78,8 @@ pygame.display.set_caption('AI_test')
 
 # maps
 Map1 = Map('assets/block.png', SCREEN_WIDTH, SCREEN_HEIGHT)
-Map2 = Map('assets/test.jpg', SCREEN_WIDTH, SCREEN_HEIGHT)
-Map3 = Map('assets/test2.jpg', SCREEN_WIDTH, SCREEN_HEIGHT)
+Map2 = Map('assets/block3.png', SCREEN_WIDTH, SCREEN_HEIGHT)
+Map3 = Map('assets/block4.png', SCREEN_WIDTH, SCREEN_HEIGHT)
 Map4 = Map('assets/bg.jpg', SCREEN_WIDTH, SCREEN_HEIGHT)
 
 Map_list = [Map1, Map2, Map3, Map4]
@@ -127,7 +127,7 @@ Map3.add(m3_p4)
 
 # map and image
 Actual_map = Map1
-current_map = 0
+current_map = 2
 Background_image = Actual_map.get_bg()
 
 # players initialization with list
