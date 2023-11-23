@@ -3,39 +3,70 @@ import time as timeee
 
 class Player():
     def __init__(self, current_map, current_map_id, wages):
+        # character parameters
         self.width = 44
         self.height = 44
         self.hero_image = pygame.image.load("assets/standing2.png").convert_alpha()
         self.image = pygame.transform.scale(self.hero_image, (self.width, self.height))
         self.rect = pygame.Rect(0, 0, self.width, self.height)
+        self.rect.center = (630, 575)
+        self.current_map = current_map
+        self.current_map_id = current_map_id
+        # screen parameters
         self.scr_width = 680
         self.scr_height = 680
-        self.rect.center = (630, self.scr_width - 105)
+        # moving parameters
         self.vel_y = 0
         self.vel_x = 0
-        self.moves_list = []
         self.flip = False
         self.is_jumping = False
         self.landed = False
+        # alghoritm parameters
+        self.moves_list = []
+        self.parent_moves = [] 
+        self.wages = wages
+        self.moves_did = -1
+        self.go_next_gen = False
+        # jump parameters
         self.jump_height = 10
         self.jump_max_height = 11
         self.jump_min_height = 6
-        self.gravity = 4
-        self.charging_jump = False
-        self.duration = 0
+
         self.jump_distance = 0
         self.jump_max_distance = 11
         self.jump_min_distance = 7
+        
+        self.gravity = 4
         self.direction = ''
-        self.current_map = current_map
-        self.current_map_id = current_map_id
-        self.moves_did = 0
+        # ai controlling movements
         self.steping = False
         self.step = 0
-        self.wages = wages
-
         self.released_time = None
         self.space_pressed_time = None
+        self.charging_jump = False
+        self.duration = 0
+
+    def get_parent_moves(self):
+        return self.parent_moves
+
+    def get_go_next(self):
+        return self.go_next_gen
+
+    def go_next(self):
+        self.go_next_gen = self.moves_did == len(self.moves_list)-1 and self.landed
+
+    def add_parent_moves(self, moves):
+        for x in moves:
+            self.parent_moves.append(x)
+
+    def update_rect_x(self, x):
+        self.rect.x = x
+
+    def update_rect_y(self, y):
+        self.rect.y = y
+
+    def update_parent_moves(self, moves):
+        self.parent_moves = moves
 
     def player_update_moves(self, moves):
         self.moves_list = moves

@@ -14,13 +14,19 @@ class Evolutionary_alghoritm():
         self.next_generation = []
         self.best_individuals = []
         self.elite_individual = None
+        self.all_moves = True
         self.fitness_done = False
         self.crossover_done = False
         self.mutation_done = False
+        self.all_landed = False
+        self.was_bigger = False
         self.go_next = False
 
     def get_go_next(self):
         return self.go_next
+    
+    def set_go_next(self):
+        self.go_next = True
     
     def get_mutation_done(self):
         return self.mutation_done
@@ -55,30 +61,24 @@ class Evolutionary_alghoritm():
     def create_moves(self, player):
         player_movments = [(1,0,1), (1,0,0), (1,1,0)]
         wages = player.player_get_wages()
-        player.player_update_moves([])
-        for y in range(3):
+        for y in range(5):
             player.player_add_new_move([random.choices(player_movments, wages)[0], random.randint(200,2000)])
     
     def create_population(self, actual_map, actual_map_id, how_many=None, parents=None, how_many_seq=None):
         if self.generation > 0 and parents is not None:
             for x in range(how_many):
                 parent_a, parent_b = parents
-                #parent_a_moves = copy.deepcopy(parent_a.get_player_moves())
-                gen_parent =  random.choice([parent_a, parent_b])
-                gen_parent_moves = copy.deepcopy(gen_parent.get_parent_moves())
+                parent_a_moves = copy.deepcopy(parent_a.get_player_moves())
+                parent_b_moves = copy.deepcopy(parent_b.get_player_moves())
                 new_player = Player(
-                            gen_parent.get_player_current_map(),
-                            gen_parent.get_player_current_map_id(),
+                            actual_map,
+                            actual_map_id,
                             self.create_wages())
                 self.next_generation.append(new_player)
-                new_player.update_parent_moves(gen_parent_moves)
-                new_player.update_rect_x(gen_parent.get_player_rect().x)
-                new_player.update_rect_y(gen_parent.get_player_rect().y)
-                self.create_moves(new_player)
-                #print(new_player.get_player_moves())
-                #print(len(new_player.get_parent_moves()))
-                #print(new_player.get_player_rect().y)
-                
+                new_player.player_update_moves(random.choice([parent_a_moves, parent_b_moves]))
+                if self.was_bigger:
+                    self.create_moves(new_player)
+                #new_player.player_add_new_move([(0,0,0),0])
         elif how_many_seq is None and parents is None and how_many is None: 
             for x in range(self.size_of_generation):
                 new_player = Player(
@@ -90,7 +90,19 @@ class Evolutionary_alghoritm():
                     self.actual_generation.append(new_player)
                 else:
                     self.next_generation.append(new_player)
-                
+                #new_player.player_add_new_move([(0,0,0),0])
+        elif self.generation > 0 and parents is None:
+            for x in range(how_many):
+                new_player = Player(
+                            actual_map,
+                            actual_map_id,
+                            self.create_wages())
+                self.create_moves(new_player)
+                for y in range(how_many_seq):
+                    self.create_moves(new_player)
+                self.next_generation.append(new_player)
+                #new_player.player_add_new_move([(0,0,0),0])
+
     def fitness_n_selection(self):
         self.generation += 1
         print(self.actual_best_score)
@@ -98,10 +110,11 @@ class Evolutionary_alghoritm():
                                   key=lambda x: 680-x.get_player_rect().bottom + (x.get_player_current_map_id()*680), 
                                   reverse=True)
         for x in best_indyviduals:
-            x.add_parent_moves(x.get_player_moves())
             if 680-x.get_player_rect().bottom + (x.get_player_current_map_id()*680) > self.actual_best_score:
                 self.best_individuals.append(x)
+                self.was_bigger = True
                 self.actual_best_score = 680-x.get_player_rect().bottom + (x.get_player_current_map_id()*680)
+
                 print("added best score")
         print(self.actual_best_score)
         self.fitness_done = True
@@ -117,7 +130,7 @@ class Evolutionary_alghoritm():
             for x in range(0, number_of_individuals, 2):
                 parents = (self.best_individuals[x], self.best_individuals[x+1])
                 how_many = self.size_of_generation/number_of_pairs
-                self.create_population(actual_map, actual_map_id, how_many/number_of_pairs, parents)
+                self.create_population(actual_map, actual_map_id, how_many, parents)
         if number_of_individuals == 1:
             print("one best guy")
             parents = (self.best_individuals[0], self.best_individuals[0])
@@ -157,20 +170,28 @@ class Evolutionary_alghoritm():
         self.actual_generation = self.next_generation
         self.next_generation = []
         self.best_individuals = []
+        self.all_moves = True
         self.fitness_done = False
         self.crossover_done = False
         self.mutation_done = False
+        self.all_landed = False
         self.go_next = False
-        print(len(self.actual_generation))
        
     def alg_end(self, final_object):
         for x in self.actual_generation:
             if pygame.Rect.colliderect(x.get_player_rect(), final_object.get_rect()):
                 print(x.get_player_moves())
 
-    def get_go_next(self):
-        self.go_next = True
+    def all_made_moves(self):
+        self.all_moves = True
         for x in self.actual_generation:
-            if not x.get_go_next():
-                self.go_next = False
-        return self.go_next       
+            if len(x.get_player_moves())-1 > x.get_player_did_moves():
+                self.all_moves = False
+        return self.all_moves
+    
+    def all_landed_func(self):
+        self.all_landed = True 
+        for x in self.actual_generation:
+            if not x.get_player_landed():
+                self.all_landed = False
+        return self.all_landed

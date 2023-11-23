@@ -3,6 +3,7 @@ from platform_class import Platforma
 from player_class_ai import Player
 from map_class import Map
 from ai_managment import Evolutionary_alghoritm
+import time
 import random
 
 
@@ -60,10 +61,10 @@ window = pygame.display.set_mode((SCREEN_WIDTH+200, SCREEN_HEIGHT))
 pygame.display.set_caption('AI_test')
 
 # maps
-Map1 = Map('assets/bg.jpg', SCREEN_WIDTH, SCREEN_HEIGHT)
-Map2 = Map('assets/test.jpg', SCREEN_WIDTH, SCREEN_HEIGHT)
-Map3 = Map('assets/test2.jpg', SCREEN_WIDTH, SCREEN_HEIGHT)
-Map4 = Map('assets/bg.jpg', SCREEN_WIDTH, SCREEN_HEIGHT)
+Map1 = Map('assets/block.png', SCREEN_WIDTH, SCREEN_HEIGHT)
+Map2 = Map('assets/block3.png', SCREEN_WIDTH, SCREEN_HEIGHT)
+Map3 = Map('assets/block4.png', SCREEN_WIDTH, SCREEN_HEIGHT)
+Map4 = Map('assets/block2.png', SCREEN_WIDTH, SCREEN_HEIGHT)
 
 Map_list = [Map1, Map2, Map3, Map4]
 
@@ -114,9 +115,9 @@ Actual_map = Map1
 current_map = 0
 Background_image = Actual_map.get_bg()
 
-#ai algh creation
+#ai alghoritm creation
 
-ev_alg = Evolutionary_alghoritm(10)
+ev_alg = Evolutionary_alghoritm(30)
 ev_alg.create_population(Map1, 0)
 
 # game loop
@@ -124,22 +125,25 @@ running = True
 while running:
     clock.tick(FPS)
     list_with_characters = ev_alg.get_actual_gen()
-
     for x in list_with_characters:
-        move_list = x.get_player_moves()
-        if len(move_list)-1 == x.get_player_did_moves():
-            move_to_make, how_long = [(0,0,0),0]
-        else:
+        if not x.get_go_next():
+            #print(x.get_player_did_moves())
+            move_list = x.get_player_moves()
             move_to_make, how_long = move_list[x.get_player_did_moves()]
-        space, right, left = move_to_make
-        x.make_move(move_to_make, how_long)
-        check_collision(x, x.get_player_current_map())
-        if (x.get_player_landed() and space and not x.get_player_charging()) or (not x.get_player_steping() and (right or left) and not space):
-            if len(move_list)-1 > x.get_player_did_moves():
-                print(len(move_list))
-                x.set_player_did_moves(x.get_player_did_moves()+1)
+            space, right, left = move_to_make
+            x.make_move(move_to_make, how_long)
+            check_collision(x, x.get_player_current_map())
+            if (x.get_player_landed() and space and not x.get_player_charging()) or (not x.get_player_steping() and (right or left) and not space):
+                print(len(x.get_parent_moves()))
+                #print(move_list)
+                if len(move_list)-1 > x.get_player_did_moves():
+                    x.set_player_did_moves(x.get_player_did_moves()+1)
+                else:
+                    x.go_next()
+        else:
+            x.go_next()
 
-    if ev_alg.all_made_moves() and ev_alg.all_landed_func():
+    if ev_alg.get_go_next():
         ev_alg.fitness_n_selection()
     
     if ev_alg.get_fitness_done():
@@ -182,10 +186,6 @@ while running:
     for x in list_with_characters:
         if Map_list[current_map] == x.get_player_current_map():
             x.draw(window)
-
-    for x in range(Actual_map.getNumber()):
-        obj = Actual_map.getObject(x)
-        obj.draw(window)
 
     # event handler
     for event in pygame.event.get():
