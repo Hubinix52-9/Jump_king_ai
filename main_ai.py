@@ -108,7 +108,20 @@ final = Platforma(100, SCREEN_HEIGHT-150, 25, 25)
 Map3.add(m3_p1)
 Map3.add(m3_p2)
 Map3.add(m3_p3)
-Map3.add(final) 
+Map3.add(m3_p4)
+
+# map 4
+m4_p1 = Platforma(450, SCREEN_HEIGHT-550, 100, 25)
+m4_p2 = Platforma(200, SCREEN_HEIGHT-450, 55, 25)
+m4_p3 = Platforma(20, SCREEN_HEIGHT-250, 50, 25)
+m4_p4 = Platforma(50, SCREEN_HEIGHT-200, 150, 25)
+final = Platforma(200, SCREEN_HEIGHT-150, 25, 25)
+
+Map4.add(m4_p1)
+Map4.add(m4_p2)
+Map4.add(m4_p3)
+Map4.add(m4_p4)
+Map4.add(final) 
 
 # map and image
 Actual_map = Map1

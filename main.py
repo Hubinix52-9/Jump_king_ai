@@ -79,8 +79,8 @@ pygame.display.set_caption('AI_test')
 # maps
 Map1 = Map('assets/block.png', SCREEN_WIDTH, SCREEN_HEIGHT)
 Map2 = Map('assets/block3.png', SCREEN_WIDTH, SCREEN_HEIGHT)
-Map3 = Map('assets/block4.png', SCREEN_WIDTH, SCREEN_HEIGHT)
-Map4 = Map('assets/bg.jpg', SCREEN_WIDTH, SCREEN_HEIGHT)
+Map3 = Map('assets/block5.png', SCREEN_WIDTH, SCREEN_HEIGHT)
+Map4 = Map('assets/block7.png', SCREEN_WIDTH, SCREEN_HEIGHT)
 
 Map_list = [Map1, Map2, Map3, Map4]
 
@@ -115,19 +115,36 @@ Map2.add(m2_p4)
 Map2.add(m2_p5)
 
 # map 3
-m3_p1 = Platforma(250, SCREEN_HEIGHT-550, 100, 25)
-m3_p2 = Platforma(100, SCREEN_HEIGHT-450, 75, 25)
+m3_p1 = Platforma(300, SCREEN_HEIGHT-510, 100, 25)
+m3_p2 = Platforma(100, SCREEN_HEIGHT-350, 75, 25)
 m3_p3 = Platforma(500, SCREEN_HEIGHT-250, 150, 25)
 m3_p4 = Platforma(50, SCREEN_HEIGHT-100, 150, 25)
 
 Map3.add(m3_p1)
 Map3.add(m3_p2)
 Map3.add(m3_p3)
-Map3.add(m3_p4) 
+Map3.add(m3_p4)
+
+# map 4
+m4_p0 = Platforma(250, SCREEN_HEIGHT-550, 100, 25)
+m4_p1 = Platforma(450, SCREEN_HEIGHT-450, 100, 25)
+m4_p2 = Platforma(200, SCREEN_HEIGHT-350, 55, 25)
+m4_p3 = Platforma(20, SCREEN_HEIGHT-250, 50, 25)
+m4_p4 = Platforma(150, SCREEN_HEIGHT-200, 150, 25)
+m4_p5 = Platforma(550, SCREEN_HEIGHT-5, 100, 25)
+final = Platforma(400, SCREEN_HEIGHT-150, 50, 25)
+
+Map4.add(m4_p0)
+Map4.add(m4_p1)
+Map4.add(m4_p2)
+Map4.add(m4_p3)
+Map4.add(m4_p4)
+Map4.add(m4_p5)
+Map4.add(final) 
 
 # map and image
 Actual_map = Map1
-current_map = 2
+current_map = 3
 Background_image = Actual_map.get_bg()
 
 # players initialization with list
