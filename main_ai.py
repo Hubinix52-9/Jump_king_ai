@@ -3,9 +3,6 @@ from platform_class import Platforma
 from player_class_ai import Player
 from map_class import Map
 from ai_managment import Evolutionary_alghoritm
-import time
-import random
-
 
 def check_collision(hero, list_of_objects):
     hero_rect = hero.get_player_rect()
@@ -33,7 +30,7 @@ def check_collision(hero, list_of_objects):
             # collision with upper wall      
             if hero_rect.top <= obj_rect.top and hero_rect.bottom <= obj_rect.bottom and cond3 and cond5:
                 hero_rect.bottom = obj_rect.top
-                hero.set_landed_flag(True)
+                hero.set_player_landed(True)
                 hero.set_player_velocity_x(0)
 
             # collision with bottom wall
@@ -45,7 +42,7 @@ def check_collision(hero, list_of_objects):
         if hero_rect.bottom <= obj_rect.top and hero_rect.bottom >= obj_rect.top-45 and (cond1 or cond2):
             flag_if_collision = True
     if not flag_if_collision:
-        hero.set_landed_flag(False)
+        hero.set_player_landed(False)
 
 # initialize pygame
 pygame.init()
@@ -57,14 +54,14 @@ clock = pygame.time.Clock()
 FPS = 60
 
 # create game window  
-window = pygame.display.set_mode((SCREEN_WIDTH+200, SCREEN_HEIGHT))
-pygame.display.set_caption('AI_test')
+window = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT+100))
+pygame.display.set_caption('AI Solving Platform Game')
 
-# maps
+# maps defining
 Map1 = Map('assets/block.png', SCREEN_WIDTH, SCREEN_HEIGHT)
 Map2 = Map('assets/block3.png', SCREEN_WIDTH, SCREEN_HEIGHT)
-Map3 = Map('assets/block4.png', SCREEN_WIDTH, SCREEN_HEIGHT)
-Map4 = Map('assets/block2.png', SCREEN_WIDTH, SCREEN_HEIGHT)
+Map3 = Map('assets/block5.png', SCREEN_WIDTH, SCREEN_HEIGHT)
+Map4 = Map('assets/block7.png', SCREEN_WIDTH, SCREEN_HEIGHT)
 
 Map_list = [Map1, Map2, Map3, Map4]
 
@@ -99,11 +96,10 @@ Map2.add(m2_p4)
 Map2.add(m2_p5)
 
 # map 3
-m3_p1 = Platforma(250, SCREEN_HEIGHT-550, 100, 25)
-m3_p2 = Platforma(100, SCREEN_HEIGHT-450, 75, 25)
-m3_p3 = Platforma(500, SCREEN_HEIGHT-250, 150, 25)
-m3_p4 = Platforma(50, SCREEN_HEIGHT-200, 150, 25)
-final = Platforma(100, SCREEN_HEIGHT-150, 25, 25)
+m3_p1 = Platforma(50, SCREEN_HEIGHT-100, 150, 25)
+m3_p2 = Platforma(500, SCREEN_HEIGHT-250, 150, 25)
+m3_p3 = Platforma(100, SCREEN_HEIGHT-350, 75, 25)
+m3_p4 = Platforma(300, SCREEN_HEIGHT-510, 100, 25)
 
 Map3.add(m3_p1)
 Map3.add(m3_p2)
@@ -111,77 +107,85 @@ Map3.add(m3_p3)
 Map3.add(m3_p4)
 
 # map 4
-m4_p1 = Platforma(450, SCREEN_HEIGHT-550, 100, 25)
-m4_p2 = Platforma(200, SCREEN_HEIGHT-450, 55, 25)
-m4_p3 = Platforma(20, SCREEN_HEIGHT-250, 50, 25)
-m4_p4 = Platforma(50, SCREEN_HEIGHT-200, 150, 25)
-final = Platforma(200, SCREEN_HEIGHT-150, 25, 25)
+
+m4_p1 = Platforma(550, SCREEN_HEIGHT-5, 100, 25)
+m4_p2 = Platforma(400, SCREEN_HEIGHT-150, 50, 25)
+m4_p3 = Platforma(150, SCREEN_HEIGHT-200, 150, 25)
+m4_p4 = Platforma(20, SCREEN_HEIGHT-250, 50, 25)
+m4_p5 = Platforma(200, SCREEN_HEIGHT-350, 55, 25)
+m4_p6 = Platforma(450, SCREEN_HEIGHT-450, 100, 25)
+m4_p7 = Platforma(250, SCREEN_HEIGHT-550, 100, 25)
+final = Platforma(270, SCREEN_HEIGHT-580, 25, 25)
+
 
 Map4.add(m4_p1)
 Map4.add(m4_p2)
 Map4.add(m4_p3)
 Map4.add(m4_p4)
-Map4.add(final) 
+Map4.add(m4_p5)
+Map4.add(m4_p6)
+Map4.add(m4_p7) 
+
+# ui
+font = pygame.font.Font(None, 35)
+
 
 # map and image
 Actual_map = Map1
 current_map = 0
 Background_image = Actual_map.get_bg()
 
-#ai alghoritm creation
-
-ev_alg = Evolutionary_alghoritm(30)
+# ai alghoritm creation
+ev_alg = Evolutionary_alghoritm(40)
 ev_alg.create_population(Map1, 0)
 
 # game loop
 running = True
 while running:
+    window.fill((0,0,0))
     clock.tick(FPS)
     list_with_characters = ev_alg.get_actual_gen()
-    for x in list_with_characters:
-        if not x.get_go_next():
-            #print(x.get_player_did_moves())
-            move_list = x.get_player_moves()
-            move_to_make, how_long = move_list[x.get_player_did_moves()]
-            space, right, left = move_to_make
-            x.make_move(move_to_make, how_long)
-            check_collision(x, x.get_player_current_map())
-            if (x.get_player_landed() and space and not x.get_player_charging()) or (not x.get_player_steping() and (right or left) and not space):
-                print(len(x.get_parent_moves()))
-                #print(move_list)
-                if len(move_list)-1 > x.get_player_did_moves():
-                    x.set_player_did_moves(x.get_player_did_moves()+1)
-                else:
-                    x.go_next()
-        else:
-            x.go_next()
+    if not ev_alg.get_showout():
+        for x in list_with_characters:
+            if not x.get_go_next():
+                move_list = x.get_player_moves()
+                move_to_make, how_long = move_list[x.get_player_did_moves()]
+                space, right, left = move_to_make
+                x.make_move(move_to_make, how_long)
+                check_collision(x, x.get_player_current_map())
+                if (x.get_player_landed() and space and not x.get_player_charging()) or (not x.get_player_steping() and (right or left) and not space):
+                    if len(move_list)-1 > x.get_player_did_moves():
+                        x.set_player_did_moves(x.get_player_did_moves()+1)
+                    else:
+                        x.set_go_next()
+    else:
+        ev_alg.ultimate_indyvidual(Map1, 0, ev_alg.get_ultimate_individual())
 
     if ev_alg.get_go_next():
         ev_alg.fitness_n_selection()
     
     if ev_alg.get_fitness_done():
-        print("fitness done")
         ev_alg.crossover(Map1, 0)
     
     if ev_alg.get_crossover_done():
-        print("crossover done")
         ev_alg.mutation()
 
     if ev_alg.get_mutation_done():
         ev_alg.prep_for_next_gen()
 
+    ev_alg.alghoritm_end(Map4, final)
 
     # map tracing
     for x in list_with_characters:
         higest_map = []    
       
-        if x.get_player_rect().top < 0:
+        if x.get_player_rect().top < 0 and x.get_player_current_map_id() < len(Map_list)-1:
             x.set_player_current_map_id(x.get_player_current_map_id() + 1)  
-            x.update_player_y(SCREEN_HEIGHT - x.get_player_height() * 2)
+            x.update_rect_y(SCREEN_HEIGHT - x.get_player_height() * 2)
 
         if x.get_player_rect().bottom > SCREEN_HEIGHT:
             x.set_player_current_map_id(x.get_player_current_map_id() - 1)
-            x.update_player_y(0)
+            x.update_rect_y(0)
 
         x.set_player_current_map(Map_list[x.get_player_current_map_id()])
 
@@ -199,6 +203,20 @@ while running:
     for x in list_with_characters:
         if Map_list[current_map] == x.get_player_current_map():
             x.draw(window)
+
+    # drawing ui
+    text_render = font.render("Generacja: "+str(ev_alg.get_generation()), True, (255,255,255))
+    window.blit(text_render, (20, 715))
+    if ev_alg.get_elite() is None:
+        text_render = font.render("Best score: "+str(0), True, (255,255,255))
+        window.blit(text_render, (215, 715))
+        text_render = font.render("How many moves: "+str(0), True, (255,255,255))
+        window.blit(text_render, (420, 715))
+    else:
+        text_render = font.render("Best score: "+str(ev_alg.get_elite().get_value()), True, (255,255,255))
+        window.blit(text_render, (215, 715))
+        text_render = font.render("How many moves: "+str(len(ev_alg.get_elite().get_parent_moves())), True, (255,255,255))
+        window.blit(text_render, (420, 715))
 
     # event handler
     for event in pygame.event.get():

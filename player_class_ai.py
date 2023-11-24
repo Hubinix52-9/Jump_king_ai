@@ -29,13 +29,11 @@ class Player():
         self.go_next_gen = False
         # jump parameters
         self.jump_height = 10
-        self.jump_max_height = 11
+        self.jump_max_height = 12
         self.jump_min_height = 6
-
         self.jump_distance = 0
         self.jump_max_distance = 11
         self.jump_min_distance = 7
-        
         self.gravity = 4
         self.direction = ''
         # ai controlling movements
@@ -45,134 +43,81 @@ class Player():
         self.space_pressed_time = None
         self.charging_jump = False
         self.duration = 0
-
+    # character parameters functions
+    def get_player_rect(self):
+        return self.rect
+    def update_rect_x(self, x):
+        self.rect.x = x
+    def update_rect_y(self, y):
+        self.rect.y = y
+    def get_player_current_map(self):
+        return self.current_map
+    def set_player_current_map(self, map):
+        self.current_map = map
+    def get_player_current_map_id(self):
+        return self.current_map_id
+    def set_player_current_map_id(self, id):
+    
+        self.current_map_id = id
+    # screen parameters functions
+    def get_player_width(self):
+        return self.height
+    def get_player_height(self):
+        return self.height
+    # moving parameters functions
+    def get_player_velocity_y(self):
+        return self.vel_y
+    def set_player_velocity_y(self, vel_y):
+        self.vel_y = vel_y
+    def get_player_velocity_x(self):
+        return self.vel_x
+    def set_player_velocity_x(self, vel_x):
+        self.vel_x = vel_x
+        return self.flip
+    def get_player_jumping(self):
+        return self.is_jumping
+    def set_player_jumping(self, flag):
+        self.is_jumping = flag
+    def get_player_landed(self):
+        return self.landed
+    def set_player_landed(self, flag):
+        self.landed = flag
+    # alghoritm parameters functions
+    def get_player_moves(self):
+        return self.moves_list
+    def set_player_moves(self, moves):
+        self.moves_list = moves
+    def player_add_new_move(self, move):
+        self.moves_list.append(move)
     def get_parent_moves(self):
         return self.parent_moves
-
-    def get_go_next(self):
-        return self.go_next_gen
-
-    def go_next(self):
-        self.go_next_gen = self.moves_did == len(self.moves_list)-1 and self.landed
-
+    def set_parent_moves(self, moves):
+        self.parent_moves = moves
     def add_parent_moves(self, moves):
         for x in moves:
             self.parent_moves.append(x)
-
-    def update_rect_x(self, x):
-        self.rect.x = x
-
-    def update_rect_y(self, y):
-        self.rect.y = y
-
-    def update_parent_moves(self, moves):
-        self.parent_moves = moves
-
-    def player_update_moves(self, moves):
-        self.moves_list = moves
-
-    def player_add_new_move(self, move):
-        self.moves_list.append(move)
-
-    def player_get_wages(self):
+    def rem_last_parent_move(self):
+        self.parent_moves = self.parent_moves[:-1]
+    def get_player_wages(self):
         return self.wages
-    
-    def player_update_wages(self, wages):
+    def set_player_wages(self, wages):
         self.wages = wages
-
-    def get_player_charging(self):
-        return self.charging_jump
-
-    def get_player_steping(self):
-        return self.steping
-
-    def reset_player_moves(self):
-        self.moves_did = 0
-
-    def get_player_landed(self):
-        return self.landed
-
     def get_player_did_moves(self):
         return self.moves_did
-
     def set_player_did_moves(self, number):
         self.moves_did = number
-
-    def get_player_moves(self):
-        return self.moves_list
-
-    def set_player_current_map_id(self, id):
-        self.current_map_id = id
-    
-    def get_player_current_map_id(self):
-        return self.current_map_id
-
-    def get_player_current_map(self):
-        return self.current_map
-
-    def set_player_current_map(self, map):
-        self.current_map = map
-
-    def get_player_jumping(self):
-        return self.is_jumping
-
-    def get_player_flip(self):
-        return self.flip
-
-    def get_player_direction(self):
-        return self.direction
-
-    def set_player_velocity_x(self, wart):
-        self.vel_x = wart
-
-    def get_player_velocity_x(self):
-        return self.vel_x
-
-    def set_player_velocity_y(self, wart):
-        self.vel_y = wart
-
-    def get_player_velocity_y(self):
-        return self.vel_y
-
-    def get_player_bumped(self):
-        return self.bumped
-
-    def set_player_bumped(self, wart):
-        self.bumped = wart
-
-    def set_player_wall_bumped(self, wart):
-        self.bumped = wart
-
-    def get_player_jump_height(self):
-        return self.jump_height
-
-    def set_player_height(self, wart):
-        self.jump_height = wart
-
-    def get_player_gravity(self):
-        return self.gravity
-
-    def set_player_gravity(self, wart):
-        self.gravity = wart
-
-    def set_player_jumping(self, wart):
-        self.is_jumping = wart
-
-    def get_player_width(self):
-        return self.height
-
-    def get_player_height(self):
-        return self.height
-
-    def get_player_rect(self):
-        return self.rect
-
-    def update_player_y(self, y):
-        self.rect.y = y
-
-    def set_landed_flag(self, wart):
-        self.landed = wart
-
+    def get_go_next(self):
+        return self.go_next_gen
+    def set_go_next(self):
+        self.go_next_gen = self.moves_did == len(self.moves_list)-1 and self.landed
+    # ai controlling parameters functions
+    def get_player_steping(self):
+        return self.steping
+    def get_player_charging(self):
+        return self.charging_jump
+    def get_value(self):
+        return 680-self.rect.bottom + (self.current_map_id*680)
+    # moving functions
     def make_move(self, keys, jump_time):
         character_image_jumping = None
         space, right, left = keys
@@ -194,7 +139,6 @@ class Player():
             character_image_jumping = pygame.image.load('assets/standing2.png').convert_alpha()
             self.image = pygame.transform.scale(character_image_jumping, (self.width, self.height))
             self.move(keys, jump_time)
-
     def move(self, key, time):
         dx = 0
         dy = 0
@@ -302,6 +246,5 @@ class Player():
         # update coordinates
         self.rect.x += dx
         self.rect.y += dy
-
     def draw(self, window):
         window.blit(pygame.transform.flip(self.image, self.flip, False), (self.rect.x, self.rect.y))
