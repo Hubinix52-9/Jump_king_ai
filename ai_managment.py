@@ -12,7 +12,7 @@ class Evolutionary_alghoritm():
         self.actual_generation = []
         self.next_generation = []
         self.best_individuals = []
-        self.elite_individual = None
+        self.elite_individuals = []
         self.ultimate_individual = None
         self.fitness_done = False
         self.crossover_done = False
@@ -25,7 +25,7 @@ class Evolutionary_alghoritm():
     def get_showout(self):
         return self.showout
     def get_elite(self):
-        return self.elite_individual
+        return self.elite_individuals
     def get_generation(self):
         return self.generation
     def get_go_next(self):
@@ -104,29 +104,32 @@ class Evolutionary_alghoritm():
         best_indyviduals = sorted(self.actual_generation, 
                                   key=lambda x: 680-x.get_player_rect().bottom + (x.get_player_current_map_id()*680), 
                                   reverse=True)
-        if best_indyviduals[0].get_value() - self.actual_best_score > 0:
-            for x in best_indyviduals:
-                x.add_parent_moves(x.get_player_moves())
-                if x.get_value() >= best_indyviduals[0].get_value():
-                    self.best_individuals.append(x)
-                    best_scores = x.get_value()
-            self.actual_best_score = best_indyviduals[0].get_value()
+        if len(best_indyviduals) > 0:
+            if best_indyviduals[0].get_value() - self.actual_best_score > 0:
+                for x in best_indyviduals:
+                    x.add_parent_moves(x.get_player_moves())
+                    if x.get_value() >= best_indyviduals[0].get_value():
+                        self.best_individuals.append(x)
+                self.actual_best_score = best_indyviduals[0].get_value()
         self.fitness_done = True   
     def crossover(self, actual_map, actual_map_id):
+        def more_parents(how_many, list_of_parents):
+            if how_many % 2 == 1:
+                list_of_parents.remove(list_of_parents[-1])
+            how_many = len(list_of_parents)
+            number_of_pairs = how_many / 2
+            how_many_pep = int(self.size_of_generation/number_of_pairs)
+            left = int(self.size_of_generation - (number_of_pairs*how_many))
+            for x in range(0, how_many, 2):
+                parents = (list_of_parents[x], list_of_parents[x+1])
+                self.create_population(actual_map, actual_map_id, how_many_pep, parents)
+            if left>0:
+                parents = (list_of_parents[0], list_of_parents[1])
+                self.create_population(actual_map, actual_map_id, left, parents)
+        
         number_of_individuals = len(self.best_individuals)
         if number_of_individuals > 1:
-            if number_of_individuals % 2 == 1:
-                self.best_individuals.remove(self.best_individuals[-1])
-            number_of_individuals = len(self.best_individuals)
-            number_of_pairs = number_of_individuals / 2
-            how_many = int(self.size_of_generation/number_of_pairs)
-            left = int(self.size_of_generation - (number_of_pairs*how_many))
-            for x in range(0, number_of_individuals, 2):
-                parents = (self.best_individuals[x], self.best_individuals[x+1])
-                self.create_population(actual_map, actual_map_id, how_many, parents)
-            if left>0:
-                parents = (self.best_individuals[0], self.best_individuals[1])
-                self.create_population(actual_map, actual_map_id, left, parents)
+            more_parents(number_of_individuals, self.best_individuals)
         if number_of_individuals == 1:
             parents = (self.best_individuals[0], self.best_individuals[0])
             self.create_population(actual_map, actual_map_id, self.size_of_generation, parents)
@@ -136,13 +139,17 @@ class Evolutionary_alghoritm():
                                    self.size_of_generation - len(self.next_generation), 
                                    None, 
                                    None)
-        if len(self.best_individuals) == 0 and self.elite_individual is not None:
-            parents = self.elite_individual, self.elite_individual
-            self.create_population(actual_map, 
-                                   actual_map_id, 
-                                   self.size_of_generation, 
-                                   parents, 
-                                   None) 
+        if len(self.best_individuals) == 0:
+            if len(self.elite_individuals) == 1:
+                parents = self.elite_individuals[0], self.elite_individuals[0]
+                self.create_population(actual_map, 
+                                    actual_map_id, 
+                                    self.size_of_generation, 
+                                    parents, 
+                                    None) 
+            elif len(self.elite_individuals) > 1:
+                ammount_elites = len(self.elite_individuals)
+                more_parents(ammount_elites, self.elite_individuals)                       
         self.crossover_done = True        
     def mutation(self):
         for x in self.next_generation:
@@ -150,7 +157,9 @@ class Evolutionary_alghoritm():
         self.mutation_done = True
     def prep_for_next_gen(self):
         if len(self.best_individuals) > 0:
-            self.elite_individual = self.best_individuals[0]
+            self.elite_individuals = []
+            for x in self.best_individuals:
+                self.elite_individuals.append(x)
         self.actual_generation = self.next_generation
         self.next_generation = []
         self.best_individuals = []
@@ -161,21 +170,22 @@ class Evolutionary_alghoritm():
     def alghoritm_end(self, map, final_object):
         for x in self.actual_generation:
             if pygame.Rect.colliderect(x.get_player_rect(), final_object.get_rect()) and map == x.get_player_current_map():
-                if x.get_player_landed():
+                if x.get_player_landed() and not x.get_player_steping():
                     with open('Sequence_that_solved_game.txt', 'w') as file:
                         for item in x.get_parent_moves():
                             file.write(str(item)+'\n')
                     self.showout = True
-                    self.ultimate_individual = x           
-    def ultimate_indyvidual(self, map_name, map_id, winning_individual):
-        moves_did = winning_individual.get_player_did_moves()
+                    self.ultimate_individual = x 
+                    self.ultimate_individual.add_parent_moves(self.ultimate_individual.get_player_moves())          
+    def ultimate_indyvidual(self, map_name, map_id):
+        moves_did = self.ultimate_individual.get_player_did_moves()
         to_delete = 2 - moves_did
+        self.actual_generation = []
         for x in range(to_delete):
-            winning_individual.rem_last_parent_move()
+            self.ultimate_individual.rem_last_parent_move()
         new_player = Player(
                             map_name,
                             map_id,
-                            winning_individual.get_player_wages())
-        self.actual_generation = [new_player]
-        new_player.set_player_moves(winning_individual.get_parent_moves())
-        self.showout = False
+                            self.ultimate_individual.get_player_wages())
+        self.actual_generation.append(new_player)
+        new_player.set_player_moves(self.ultimate_individual.get_parent_moves())

@@ -99,7 +99,7 @@ Map2.add(m2_p5)
 m3_p1 = Platforma(50, SCREEN_HEIGHT-100, 150, 25)
 m3_p2 = Platforma(500, SCREEN_HEIGHT-250, 150, 25)
 m3_p3 = Platforma(100, SCREEN_HEIGHT-350, 75, 25)
-m3_p4 = Platforma(300, SCREEN_HEIGHT-510, 100, 25)
+m3_p4 = Platforma(320, SCREEN_HEIGHT-490, 100, 25)
 
 Map3.add(m3_p1)
 Map3.add(m3_p2)
@@ -145,35 +145,39 @@ while running:
     window.fill((0,0,0))
     clock.tick(FPS)
     list_with_characters = ev_alg.get_actual_gen()
+    for x in list_with_characters:
+        if not x.get_go_next():
+            move_list = x.get_player_moves()
+            move_to_make, how_long = move_list[x.get_player_did_moves()]
+            space, right, left = move_to_make
+            x.make_move(move_to_make, how_long)
+            check_collision(x, x.get_player_current_map())
+            if (x.get_player_landed() and space and not x.get_player_charging()) or (not x.get_player_steping() and (right or left) and not space):
+                if len(move_list)-1 > x.get_player_did_moves():
+                    x.set_player_did_moves(x.get_player_did_moves()+1)
+                else:
+                    x.set_go_next()
+        
     if not ev_alg.get_showout():
-        for x in list_with_characters:
-            if not x.get_go_next():
-                move_list = x.get_player_moves()
-                move_to_make, how_long = move_list[x.get_player_did_moves()]
-                space, right, left = move_to_make
-                x.make_move(move_to_make, how_long)
-                check_collision(x, x.get_player_current_map())
-                if (x.get_player_landed() and space and not x.get_player_charging()) or (not x.get_player_steping() and (right or left) and not space):
-                    if len(move_list)-1 > x.get_player_did_moves():
-                        x.set_player_did_moves(x.get_player_did_moves()+1)
-                    else:
-                        x.set_go_next()
-    else:
-        ev_alg.ultimate_indyvidual(Map1, 0, ev_alg.get_ultimate_individual())
+        if ev_alg.get_go_next():
+            ev_alg.fitness_n_selection()
+        
+        if ev_alg.get_fitness_done():
+            ev_alg.crossover(Map1, 0)
+        
+        if ev_alg.get_crossover_done():
+            ev_alg.mutation()
 
-    if ev_alg.get_go_next():
-        ev_alg.fitness_n_selection()
+        if ev_alg.get_mutation_done():
+            ev_alg.prep_for_next_gen()
+
+        ev_alg.alghoritm_end(Map4, final)
+
+        if ev_alg.get_showout():
+            ev_alg.ultimate_indyvidual(Map1, 0)
     
-    if ev_alg.get_fitness_done():
-        ev_alg.crossover(Map1, 0)
-    
-    if ev_alg.get_crossover_done():
-        ev_alg.mutation()
 
-    if ev_alg.get_mutation_done():
-        ev_alg.prep_for_next_gen()
 
-    ev_alg.alghoritm_end(Map4, final)
 
     # map tracing
     for x in list_with_characters:
@@ -207,15 +211,15 @@ while running:
     # drawing ui
     text_render = font.render("Generacja: "+str(ev_alg.get_generation()), True, (255,255,255))
     window.blit(text_render, (20, 715))
-    if ev_alg.get_elite() is None:
+    if len(ev_alg.get_elite()) == 0:
         text_render = font.render("Best score: "+str(0), True, (255,255,255))
         window.blit(text_render, (215, 715))
         text_render = font.render("How many moves: "+str(0), True, (255,255,255))
         window.blit(text_render, (420, 715))
     else:
-        text_render = font.render("Best score: "+str(ev_alg.get_elite().get_value()), True, (255,255,255))
+        text_render = font.render("Best score: "+str(ev_alg.get_elite()[0].get_value()), True, (255,255,255))
         window.blit(text_render, (215, 715))
-        text_render = font.render("How many moves: "+str(len(ev_alg.get_elite().get_parent_moves())), True, (255,255,255))
+        text_render = font.render("How many moves: "+str(len(ev_alg.get_elite()[0].get_parent_moves())), True, (255,255,255))
         window.blit(text_render, (420, 715))
 
     # event handler
