@@ -1,5 +1,6 @@
 import pygame
 import time as timeee
+import copy
 
 class Player():
     def __init__(self, current_map, current_map_id, wages):
@@ -23,7 +24,7 @@ class Player():
         self.landed = False
         # alghoritm parameters
         self.moves_list = []
-        self.parent_moves = [] 
+        self.parent_moves = []
         self.wages = wages
         self.moves_did = -1
         self.go_next_gen = False
@@ -44,12 +45,18 @@ class Player():
         self.charging_jump = False
         self.duration = 0
     # character parameters functions
+    def get_player_xy(self):
+        return self.rect.x, self.rect.y
     def get_player_rect(self):
         return self.rect
+    def update_rect(self, war):
+        xx,yy = war
+        self.rect.x = xx
+        self.rect.y = yy 
     def update_rect_x(self, x):
-        self.rect.x = x
+        self.rect.x = x 
     def update_rect_y(self, y):
-        self.rect.y = y
+        self.rect.y = y     
     def get_player_current_map(self):
         return self.current_map
     def set_player_current_map(self, map):
@@ -86,15 +93,19 @@ class Player():
     def get_player_moves(self):
         return self.moves_list
     def set_player_moves(self, moves):
-        self.moves_list = moves
+        moves_to_add = copy.deepcopy(moves)
+        self.moves_list = moves_to_add
     def player_add_new_move(self, move):
-        self.moves_list.append(move)
+        move_to_add = copy.deepcopy(move)
+        self.moves_list.append(move_to_add)
     def get_parent_moves(self):
         return self.parent_moves
     def set_parent_moves(self, moves):
-        self.parent_moves = moves
+        moves_to_add = copy.deepcopy(moves)
+        self.parent_moves = moves_to_add
     def add_parent_moves(self, moves):
-        for x in moves:
+        moves_to_add = copy.deepcopy(moves)
+        for x in moves_to_add:
             self.parent_moves.append(x)
     def rem_last_parent_move(self):
         self.parent_moves = self.parent_moves[:-1]
@@ -123,14 +134,14 @@ class Player():
         space, right, left = keys
         if self.landed:
             if space and self.space_pressed_time is None and not self.charging_jump: 
-                self.space_pressed_time = timeee.time()
+                self.space_pressed_time = timeee.perf_counter()
                 self.charging_jump = True
                 character_image_jumping = pygame.image.load('assets/jumping2.png').convert_alpha()
                 self.image = pygame.transform.scale(character_image_jumping, (self.width, self.height))
             elif space and self.space_pressed_time is not None and self.charging_jump:
-                self.released_time = timeee.time()
+                self.released_time = timeee.perf_counter()
                 duration = (self.released_time - self.space_pressed_time) *1000
-                if duration > jump_time:
+                if duration >= jump_time:
                     self.charging_jump = False
                     self.space_pressed_time = None
                     self.released_time = None

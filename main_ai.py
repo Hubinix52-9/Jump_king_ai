@@ -51,7 +51,7 @@ SCREEN_HEIGHT = 680
 
 # set frame rate
 clock = pygame.time.Clock()
-FPS = 60
+FPS = 50
 
 # create game window  
 window = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT+100))
@@ -68,11 +68,11 @@ Map_list = [Map1, Map2, Map3, Map4]
 # map 1
 m1_p1 = Platforma(0, SCREEN_HEIGHT, SCREEN_WIDTH, 100)
 m1_p2 = Platforma(130, SCREEN_HEIGHT-150, 100, 25)
-m1_p3 = Platforma(330, SCREEN_HEIGHT-200, 100, 25)
-m1_p4 = Platforma(350, SCREEN_HEIGHT-400, 200, 25)
+m1_p3 = Platforma(330, SCREEN_HEIGHT-180, 100, 25)
+m1_p4 = Platforma(350, SCREEN_HEIGHT-380, 200, 25)
 m1_p5 = Platforma(30, SCREEN_HEIGHT-300, 150, 25)
-m1_p6 = Platforma(100, SCREEN_HEIGHT-500, 100, 25)
-m1_p7 = Platforma(320, SCREEN_HEIGHT-600, 100, 25)
+m1_p6 = Platforma(0, SCREEN_HEIGHT-480, 200, 25)
+m1_p7 = Platforma(340, SCREEN_HEIGHT-580, 150, 25)
 
 Map1.add(m1_p1)
 Map1.add(m1_p2)
@@ -115,7 +115,7 @@ m4_p4 = Platforma(20, SCREEN_HEIGHT-250, 50, 25)
 m4_p5 = Platforma(200, SCREEN_HEIGHT-350, 55, 25)
 m4_p6 = Platforma(450, SCREEN_HEIGHT-450, 100, 25)
 m4_p7 = Platforma(250, SCREEN_HEIGHT-550, 100, 25)
-final = Platforma(270, SCREEN_HEIGHT-580, 25, 25)
+final = Platforma(320, SCREEN_HEIGHT-625, 100, 25)
 
 
 Map4.add(m4_p1)
@@ -129,19 +129,21 @@ Map4.add(m4_p7)
 # ui
 font = pygame.font.Font(None, 35)
 
-
 # map and image
 Actual_map = Map1
 current_map = 0
 Background_image = Actual_map.get_bg()
 
 # ai alghoritm creation
-ev_alg = Evolutionary_alghoritm(40)
-ev_alg.create_population(Map1, 0)
+ev_alg = Evolutionary_alghoritm(30)
+
+#ev_alg.create_population(Map1, 0)
+ev_alg.create_from_file(Map1, 0)
 
 # game loop
 running = True
 while running:
+    
     window.fill((0,0,0))
     clock.tick(FPS)
     list_with_characters = ev_alg.get_actual_gen()
@@ -153,6 +155,8 @@ while running:
             x.make_move(move_to_make, how_long)
             check_collision(x, x.get_player_current_map())
             if (x.get_player_landed() and space and not x.get_player_charging()) or (not x.get_player_steping() and (right or left) and not space):
+                print(move_to_make, how_long)
+                print(x.get_player_did_moves())
                 if len(move_list)-1 > x.get_player_did_moves():
                     x.set_player_did_moves(x.get_player_did_moves()+1)
                 else:
@@ -171,14 +175,11 @@ while running:
         if ev_alg.get_mutation_done():
             ev_alg.prep_for_next_gen()
 
-        ev_alg.alghoritm_end(Map4, final)
+        ev_alg.alghoritm_end(Map1, final)
 
         if ev_alg.get_showout():
             ev_alg.ultimate_indyvidual(Map1, 0)
     
-
-
-
     # map tracing
     for x in list_with_characters:
         higest_map = []    
@@ -208,19 +209,27 @@ while running:
         if Map_list[current_map] == x.get_player_current_map():
             x.draw(window)
 
+    for x in range(Map_list[current_map].getNumber()):
+        Map_list[current_map].getObject(x).draw(window)
+
+
     # drawing ui
     text_render = font.render("Generacja: "+str(ev_alg.get_generation()), True, (255,255,255))
     window.blit(text_render, (20, 715))
     if len(ev_alg.get_elite()) == 0:
         text_render = font.render("Best score: "+str(0), True, (255,255,255))
         window.blit(text_render, (215, 715))
-        text_render = font.render("How many moves: "+str(0), True, (255,255,255))
-        window.blit(text_render, (420, 715))
+        text_render = font.render("Moves: "+str(0), True, (255,255,255))
+        window.blit(text_render, (410, 715))
     else:
         text_render = font.render("Best score: "+str(ev_alg.get_elite()[0].get_value()), True, (255,255,255))
         window.blit(text_render, (215, 715))
-        text_render = font.render("How many moves: "+str(len(ev_alg.get_elite()[0].get_parent_moves())), True, (255,255,255))
-        window.blit(text_render, (420, 715))
+        text_render = font.render("Moves: "+str(len(ev_alg.get_elite()[0].get_parent_moves())), True, (255,255,255))
+        window.blit(text_render, (410, 715))
+    
+    fps = int(clock.get_fps())
+    fps_text = font.render("Fps : "+str(fps), True, (255,255,255))
+    window.blit(fps_text, (550, 715))
 
     # event handler
     for event in pygame.event.get():
