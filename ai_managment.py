@@ -21,6 +21,7 @@ class Evolutionary_alghoritm():
         self.was_bigger = False
         self.showout = False
         self.testing = False
+        self.testing_done = False
     def get_ultimate_individual(self):
         return self.ultimate_individual
     def get_showout(self):
@@ -29,8 +30,6 @@ class Evolutionary_alghoritm():
         return self.elite_individuals
     def get_generation(self):
         return self.generation
-    def get_go_next(self):
-        return self.go_next
     def get_mutation_done(self):
         return self.mutation_done
     def get_crossover_done(self):
@@ -173,6 +172,8 @@ class Evolutionary_alghoritm():
         self.crossover_done = False
         self.mutation_done = False
         self.go_next = False 
+        self.testing = False
+        self.testing_done = False
     def alghoritm_end(self, map, final_object):
         for x in self.actual_generation:
             if pygame.Rect.colliderect(x.get_player_rect(), final_object.get_rect()) and map == x.get_player_current_map():
@@ -180,17 +181,23 @@ class Evolutionary_alghoritm():
                     self.showout = True
                     self.ultimate_individual = x 
                     ultimate_moves = copy.deepcopy(self.ultimate_individual.get_player_moves())
-                    self.ultimate_individual.add_parent_moves(ultimate_moves) 
+                    self.ultimate_individual.add_parent_moves(ultimate_moves)
+                    moves_did = self.ultimate_individual.get_player_did_moves()
+                    print("ile ruchow zrobil : " + str(moves_did))
+                    print("przed usunieciem : "+ str(len(self.ultimate_individual.get_parent_moves())))
+                    if moves_did==2:
+                        to_delete = 0 
+                    else:
+                        to_delete = 3-moves_did
+                    for y in range(to_delete):
+                        self.ultimate_individual.rem_last_parent_move()
+                    print("przed usunieciem : "+ str(len(self.ultimate_individual.get_parent_moves())))
                     with open('Sequence_that_solved_game.txt', 'w') as file:
                         for item in x.get_parent_moves():
                             file.write(str(item)+'\n')   
                     print("now, new guy ")      
     def ultimate_indyvidual(self, map_name, map_id):
-        moves_did = self.ultimate_individual.get_player_did_moves()
-        to_delete = 2 - moves_did
         self.actual_generation = []
-        for x in range(to_delete):
-            self.ultimate_individual.rem_last_parent_move()
         new_player = Player(
                             map_name,
                             map_id,
@@ -214,3 +221,31 @@ class Evolutionary_alghoritm():
         self.actual_generation.append(new_player)
         new_player.set_player_moves(self.create_moves_from_file("Sequence_that_solved_game.txt"))
         self.showout = True
+
+    def testing_if(self, map_name, map_id):
+        self.next_generation = self.actual_generation
+        self.actual_generation = []
+        self.go_next = False
+        self.testing = True
+        self.testing_done = False
+        which_list = []
+        if len(self.best_individuals) > 0:
+            which_list = self.best_individuals
+        else:
+            which_list = self.elite_individuals
+
+        for x in which_list:
+            moves = x.parent_moves
+            new_player = Player(
+                            map_name,
+                            map_id,
+                            self.create_wages())
+            self.actual_generation.append(new_player)
+            new_player.set_player_moves(moves)
+        
+
+    def testing_done_func(self):
+        self.actual_generation = self.next_generation
+        self.next_generation = []
+        self.testing = False
+        self.testing_done = True
