@@ -3,14 +3,17 @@ import time as timeee
 import copy
 
 class Player():
-    def __init__(self, current_map, current_map_id, wages):
+    def __init__(self, current_map, current_map_id, wages, id):
         # character parameters
         self.width = 44
         self.height = 44
+        self.id = id
         self.hero_image = pygame.image.load("assets/standing2.png").convert_alpha()
         self.image = pygame.transform.scale(self.hero_image, (self.width, self.height))
         self.rect = pygame.Rect(0, 0, self.width, self.height)
         self.rect.center = (630, 575)
+        self.starting_x = self.rect.x
+        self.starting_y = self.rect.y
         self.current_map = current_map
         self.current_map_id = current_map_id
         # screen parameters
