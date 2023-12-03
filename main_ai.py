@@ -3,6 +3,7 @@ from platform_class import Platforma
 from player_class_ai import Player
 from map_class import Map
 from ai_managment import Evolutionary_alghoritm
+import time
 
 def check_collision(hero, list_of_objects):
     hero_rect = hero.rect
@@ -164,6 +165,7 @@ while running:
                 else:
                     x.set_go_next()
                     if ev_alg.testing:
+                        time.sleep(2)
                         ev_alg.testing_done_func()
         
     if not ev_alg.get_showout() and not ev_alg.testing:
