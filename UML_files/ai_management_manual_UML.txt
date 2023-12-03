@@ -1,0 +1,52 @@
+@startuml
+class Evolutionary_alghoritm {
+    get_go_next()
+    set_go_next()
+    get_mutation_done()
+    get_crossover_done()
+    get_fitness_done()
+    get_actual_gen()
+    mutation_wages()
+    create_wages()
+    create_moves()
+    create_population()
+    fitness_n_selection()
+    crossover()
+    mutation()
+    prep_for_next_gen()
+    alg_end()
+    all_made_moves()
+    all_landed_func()
+        size_of_generation
+    mutation_rate
+    generation
+    actual_best_score
+    elite_individual
+    all_moves
+    fitness_done
+    crossover_done
+    mutation_done
+    all_landed
+    was_bigger
+    go_next
+    go_next
+    was_bigger
+    actual_best_score
+    fitness_done
+    crossover_done
+    mutation_done
+    elite_individual
+    actual_generation
+    all_moves
+    fitness_done
+    crossover_done
+    mutation_done
+    all_landed
+    go_next
+    all_moves
+    all_moves
+    all_landed
+    all_landed
+    __init__()
+}
+@enduml

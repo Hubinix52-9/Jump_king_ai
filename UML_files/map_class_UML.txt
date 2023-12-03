@@ -1,0 +1,12 @@
+@startuml
+class Map {
+    add()
+    getObject()
+    getNumber()
+    get_bg()
+    clear()
+        image
+    scaled_image
+    __init__()
+}
+@enduml
