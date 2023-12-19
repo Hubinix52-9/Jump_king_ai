@@ -24,21 +24,23 @@ class Evolutionary_alghoritm():
         self.showout = False
         self.testing = False
         self.testing_done = False
-    def get_ultimate_individual(self):
+        self.all_good = False
+        self.last_testing = False
+    def get_ultimate_individual(self):# -> Any | None:
         return self.ultimate_individual
-    def get_showout(self):
+    def get_showout(self) -> bool:
         return self.showout
-    def get_elite(self):
+    def get_elite(self):# -> list:
         return self.elite_individuals
-    def get_generation(self):
+    def get_generation(self) -> int:
         return self.generation
-    def get_mutation_done(self):
+    def get_mutation_done(self) -> bool:
         return self.mutation_done
-    def get_crossover_done(self):
+    def get_crossover_done(self) -> bool:
         return self.crossover_done
-    def get_fitness_done(self):
+    def get_fitness_done(self) -> bool:
         return self.fitness_done
-    def get_actual_gen(self):
+    def get_actual_gen(self):# -> list:# -> list:
         return self.actual_generation
     def get_go_next(self):
         self.go_next = True
@@ -46,7 +48,7 @@ class Evolutionary_alghoritm():
             if not x.get_go_next():
                 self.go_next = False
         return self.go_next     
-    def mutation_wages(self, player):
+    def mutation_wages(self, player) -> None:
         decide_number = random.randint(1,100)
         wages = []
         if decide_number < self.mutation_rate*100:
@@ -60,7 +62,7 @@ class Evolutionary_alghoritm():
             player.set_player_wages(wages)
         else:
             wages.append(player.get_player_wages())
-    def create_wages(self):
+    def create_wages(self):# -> list:
         wages = []
         for x in range(3):
             wage = random.randint(1, 4)
@@ -74,7 +76,7 @@ class Evolutionary_alghoritm():
         player.set_player_moves([])
         for y in range(3):
             player.player_add_new_move([random.choices(player_movments, wages)[0], random.randint(200,2000)])  
-    def create_population(self, actual_map, actual_map_id, how_many=None, parents=None, how_many_seq=None):
+    def create_population(self, actual_map, actual_map_id, how_many=None, parents=None, how_many_seq=None) -> None:
         if self.generation > 0 and parents is not None:
             for x in range(how_many):
                 parent_a, parent_b = parents
@@ -90,7 +92,7 @@ class Evolutionary_alghoritm():
                 new_player.update_rect(gen_parent.get_player_xy())
                 self.create_moves(new_player)
                 new_player.starting_x = new_player.rect.x 
-                new_player.starting_y = new_player.rect.y 
+                new_player.starting_y = new_player.rect.y
                 self.player_id += 1
                 
         elif how_many_seq is None and parents is None and how_many is None: 
@@ -120,13 +122,15 @@ class Evolutionary_alghoritm():
                     self.best_individuals.append(x)
                     moves_to_add = copy.deepcopy(x.get_player_moves())
                     x.add_parent_moves(moves_to_add)
+                    x.ending_x = x.rect.x
+                    x.ending_y = x.rect.y 
             self.previous_best_score = self.actual_best_score
-            print("value of best indiv")
-            for x in self.best_individuals:
-                print(x.rect.bottom)
-            print("Ile jest najlepszych osobników : " + str(len(self.best_individuals)))
+            # print("value of best indiv")
+            # for x in self.best_individuals:
+            #     print(x.rect.bottom)
+            # print("Ile jest najlepszych osobników : " + str(len(self.best_individuals)))
         self.fitness_done = True   
-    def crossover(self, actual_map, actual_map_id):
+    def crossover(self, actual_map, actual_map_id) -> None:
         def more_parents(how_many, list_of_parents):
             if how_many % 2 == 1:
                 list_of_parents.remove(list_of_parents[-1])
@@ -168,11 +172,11 @@ class Evolutionary_alghoritm():
                 ammount_elites = len(self.elite_individuals)
                 more_parents(ammount_elites, self.elite_individuals)                       
         self.crossover_done = True        
-    def mutation(self):
+    def mutation(self) -> None:
         for x in self.next_generation:
             self.mutation_wages(x)
         self.mutation_done = True
-    def prep_for_next_gen(self):
+    def prep_for_next_gen(self) -> None:
         if len(self.best_individuals) > 0:
             self.elite_individuals = []
             for x in self.best_individuals:
@@ -190,7 +194,9 @@ class Evolutionary_alghoritm():
         self.testing = False
         self.testing_done = False
         self.player_id = 0
-    def alghoritm_end(self, map, final_object):
+        self.all_good = False
+        self.last_testing = False
+    def alghoritm_end(self, map, final_object) -> None:
         for x in self.actual_generation:
             if pygame.Rect.colliderect(x.get_player_rect(), final_object.get_rect()) and map == x.get_player_current_map():
                 if x.get_player_landed() and not x.get_player_steping():
@@ -212,7 +218,7 @@ class Evolutionary_alghoritm():
                         for item in x.get_parent_moves():
                             file.write(str(item)+'\n')   
                     print("now, new guy ")      
-    def ultimate_indyvidual(self, map_name, map_id):
+    def ultimate_indyvidual(self, map_name, map_id) -> None:
         self.actual_generation = []
         new_player = Player(
                             map_name,
@@ -221,7 +227,7 @@ class Evolutionary_alghoritm():
                             0)
         self.actual_generation.append(new_player)
         new_player.set_player_moves(self.ultimate_individual.get_parent_moves())
-    def create_moves_from_file(self, filename):
+    def create_moves_from_file(self, filename):# -> list:
         lines = []
         lines_after_ev = []
         with open(filename, 'r') as plik:
@@ -229,7 +235,7 @@ class Evolutionary_alghoritm():
         for x in lines:
             lines_after_ev.append(eval(x))
         return lines_after_ev
-    def create_from_file(self, map_name, map_id):
+    def create_from_file(self, map_name, map_id) -> None:
         self.actual_generation = []
         new_player = Player(
                             map_name,
@@ -239,7 +245,7 @@ class Evolutionary_alghoritm():
         self.actual_generation.append(new_player)
         new_player.set_player_moves(self.create_moves_from_file("Sequence_that_solved_game.txt"))
         self.showout = True
-    def testing_if(self, map_name, map_id):
+    def testing_if(self, map_name, map_id) -> None:
         self.next_generation = self.actual_generation
         self.actual_generation = []
         self.go_next = False
@@ -260,8 +266,52 @@ class Evolutionary_alghoritm():
                             0)
             self.actual_generation.append(new_player)
             new_player.set_player_moves(moves)
-    def testing_done_func(self):
+    def testing_done_func(self) -> None:
         self.actual_generation = self.next_generation
         self.next_generation = []
         self.testing = False
         self.testing_done = True
+    def create_best(self, map_name, map_id):
+        if len(self.best_individuals) > 0:
+            self.next_generation = self.actual_generation
+            self.actual_generation = []
+            self.go_next = False
+            self.last_testing = True
+            for x in self.best_individuals:
+                new_player = Player(
+                            map_name,
+                            map_id,
+                            self.create_wages(),
+                            0)
+                new_player.moves_list = x.moves_list
+                new_player.rect.x = x.starting_x
+                new_player.rect.y = x.starting_y
+                new_player.ending_x = x.ending_x
+                new_player.ending_y = x.ending_y
+                new_player.parent_moves = x.parent_moves
+                self.actual_generation.append(new_player)
+            
+        else:
+            self.all_good = True
+    def all_good_now(self):
+        iteration = 0
+        list_to_delete = []
+        for x in self.actual_generation:
+            print("Starting x : " + str(x.ending_x))
+            print("Ending x : " + str(x.rect.x))
+            if x.ending_x != x.rect.x:
+                list_to_delete.append(iteration)
+            iteration += 1
+        deleted = len(list_to_delete)
+        numb_of_deleted = 0
+        for x in list_to_delete:
+            self.actual_generation.remove(self.actual_generation[x-numb_of_deleted])
+            numb_of_deleted += 1
+
+        
+        print("I've deleted " + str(deleted) + " agentow")
+        self.best_individuals = self.actual_generation
+        self.actual_generation = self.next_generation
+        self.next_generation = []
+        self.last_testing = False
+        self.all_good = True

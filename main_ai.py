@@ -86,11 +86,16 @@ while running:
         list_with_characters = ev_alg.get_actual_gen()
         for x in list_with_characters:
             if not x.get_go_next():
+                
                 move_list = x.get_player_moves()
                 #print(len(move_list))
                 move_to_make, how_long = move_list[x.get_player_did_moves()]
                 space, right, left = move_to_make
-                x.make_move(move_to_make, how_long)
+                if not ev_alg.last_testing:
+                    x.make_move(move_to_make, how_long)
+                else:
+                    print(x.moves_did)
+                    x.move(move_to_make, how_long)
                 check_collision(x, x.get_player_current_map())
                 if (x.get_player_landed() and space and not x.get_player_charging()) or (not x.get_player_steping() and (right or left) and not space):
                     # if len(ev_alg.actual_generation) < 30:
@@ -104,20 +109,35 @@ while running:
                             if ev_alg.testing and ev_alg.get_go_next():
                                 time.sleep(2)
                                 ev_alg.testing_done_func()
+                        if ev_alg.last_testing and ev_alg.get_go_next():
+                            time.sleep(2)
+                            print("was there")
+                            ev_alg.all_good_now()
         
         if not ev_alg.get_showout() and not ev_alg.testing:
             if ev_alg.get_go_next() and not ev_alg.testing_done :
                 time.sleep(2)
                 ev_alg.fitness_n_selection()
+
+
+                
             if not do_checkout:
-                if ev_alg.get_fitness_done():
+                if ev_alg.get_fitness_done() and not ev_alg.last_testing and not ev_alg.all_good:
+                    ev_alg.create_best(Map_list[0], 0)
+                if ev_alg.all_good:
+                    print("was here")
                     ev_alg.crossover(Map_list[0], 0)
+
+                
 
             if do_checkout:
                 if ev_alg.get_fitness_done() and not ev_alg.testing_done:
                     ev_alg.testing_if(Map_list[0], 0)
                 
-                if ev_alg.testing_done:
+                if ev_alg.testing_done and not ev_alg.last_testing:
+                    ev_alg.create_best(Map_list[0], 0)
+
+                if ev_alg.all_good:    
                     ev_alg.crossover(Map_list[0], 0)
             
             if ev_alg.get_crossover_done():
