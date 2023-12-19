@@ -271,7 +271,7 @@ class Evolutionary_alghoritm():
         self.next_generation = []
         self.testing = False
         self.testing_done = True
-    def create_best(self, map_name, map_id):
+    def create_best(self):
         if len(self.best_individuals) > 0:
             self.next_generation = self.actual_generation
             self.actual_generation = []
@@ -279,8 +279,8 @@ class Evolutionary_alghoritm():
             self.last_testing = True
             for x in self.best_individuals:
                 new_player = Player(
-                            map_name,
-                            map_id,
+                            x.current_map,
+                            x.current_map_id,
                             self.create_wages(),
                             0)
                 new_player.moves_list = x.moves_list

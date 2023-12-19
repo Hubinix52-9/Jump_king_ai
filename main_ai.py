@@ -123,7 +123,7 @@ while running:
                 
             if not do_checkout:
                 if ev_alg.get_fitness_done() and not ev_alg.last_testing and not ev_alg.all_good:
-                    ev_alg.create_best(Map_list[0], 0)
+                    ev_alg.create_best()
                 if ev_alg.all_good:
                     print("was here")
                     ev_alg.crossover(Map_list[0], 0)
@@ -135,7 +135,7 @@ while running:
                     ev_alg.testing_if(Map_list[0], 0)
                 
                 if ev_alg.testing_done and not ev_alg.last_testing:
-                    ev_alg.create_best(Map_list[0], 0)
+                    ev_alg.create_best()
 
                 if ev_alg.all_good:    
                     ev_alg.crossover(Map_list[0], 0)
