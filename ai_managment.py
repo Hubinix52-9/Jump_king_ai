@@ -111,6 +111,8 @@ class Evolutionary_alghoritm():
                     self.next_generation.append(new_player) 
                 new_player.starting_x = new_player.rect.x 
                 new_player.starting_y = new_player.rect.y 
+                new_player.starting_map = actual_map
+                new_player.starting_map_id = actual_map_id
                 self.player_id += 1             
     def fitness_n_selection(self):
         self.generation += 1
@@ -291,6 +293,8 @@ class Evolutionary_alghoritm():
                 new_player.ending_x = x.ending_x
                 new_player.ending_y = x.ending_y
                 new_player.parent_moves = x.parent_moves
+                new_player.starting_map = x.starting_map
+                new_player.starting_map_id = x.starting_map_id
                 self.actual_generation.append(new_player)
             
         else:

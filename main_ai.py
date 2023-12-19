@@ -96,7 +96,7 @@ while running:
                 else:
                     print(x.moves_did)
                     x.move(move_to_make, how_long)
-                check_collision(x, x.get_player_current_map())
+                check_collision(x, x.current_map)
                 if (x.get_player_landed() and space and not x.get_player_charging()) or (not x.get_player_steping() and (right or left) and not space):
                     # if len(ev_alg.actual_generation) < 30:
                     #     print(move_to_make, how_long)
