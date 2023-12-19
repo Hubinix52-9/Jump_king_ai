@@ -93,8 +93,6 @@ class Evolutionary_alghoritm():
                 self.create_moves(new_player)
                 new_player.starting_x = new_player.rect.x 
                 new_player.starting_y = new_player.rect.y
-                new_player.starting_map = gen_parent.current_map
-                new_player.starting_map_id = gen_parent.current_map_id
                 self.player_id += 1
                 
         elif how_many_seq is None and parents is None and how_many is None: 
@@ -111,8 +109,6 @@ class Evolutionary_alghoritm():
                     self.next_generation.append(new_player) 
                 new_player.starting_x = new_player.rect.x 
                 new_player.starting_y = new_player.rect.y 
-                new_player.starting_map = actual_map
-                new_player.starting_map_id = actual_map_id
                 self.player_id += 1             
     def fitness_n_selection(self):
         self.generation += 1
@@ -275,7 +271,7 @@ class Evolutionary_alghoritm():
         self.next_generation = []
         self.testing = False
         self.testing_done = True
-    def create_best(self):
+    def create_best(self, actual_map, actual_map_id):
         if len(self.best_individuals) > 0:
             self.next_generation = self.actual_generation
             self.actual_generation = []
@@ -283,18 +279,16 @@ class Evolutionary_alghoritm():
             self.last_testing = True
             for x in self.best_individuals:
                 new_player = Player(
-                            x.starting_map,
-                            x.starting_map_id,
+                            actual_map,
+                            actual_map_id,
                             self.create_wages(),
                             0)
-                new_player.moves_list = x.moves_list
-                new_player.rect.x = x.starting_x
-                new_player.rect.y = x.starting_y
+                new_player.moves_list = x.parent_moves
+                new_player.rect.x = 608
+                new_player.rect.y = 572
                 new_player.ending_x = x.ending_x
                 new_player.ending_y = x.ending_y
                 new_player.parent_moves = x.parent_moves
-                new_player.starting_map = x.starting_map
-                new_player.starting_map_id = x.starting_map_id
                 self.actual_generation.append(new_player)
             
         else:

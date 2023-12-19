@@ -17,9 +17,7 @@ class Player():
         self.ending_x = 0
         self.ending_y = 0
         self.current_map = current_map
-        self.starting_map = 0
         self.current_map_id = current_map_id
-        self.starting_map_id = 0
         # screen parameters
         self.scr_width = 680
         self.scr_height = 680
