@@ -125,10 +125,6 @@ class Evolutionary_alghoritm():
                     x.ending_x = x.rect.x
                     x.ending_y = x.rect.y 
             self.previous_best_score = self.actual_best_score
-            # print("value of best indiv")
-            # for x in self.best_individuals:
-            #     print(x.rect.bottom)
-            # print("Ile jest najlepszych osobników : " + str(len(self.best_individuals)))
         self.fitness_done = True   
     def crossover(self, actual_map, actual_map_id) -> None:
         def more_parents(how_many, list_of_parents):
@@ -140,11 +136,8 @@ class Evolutionary_alghoritm():
             left = int(self.size_of_generation - (number_of_pairs*how_many_pep))
             for x in range(0, how_many, 2):
                 parents = (list_of_parents[x], list_of_parents[x+1])
-                print(list_of_parents[x].id, list_of_parents[x+1].id)
                 self.create_population(actual_map, actual_map_id, how_many_pep, parents)
-            # if left>0:
-            #     parents = (list_of_parents[0], list_of_parents[1])
-            #     self.create_population(actual_map, actual_map_id, left, parents)
+
         
         number_of_individuals = len(self.best_individuals)
         if number_of_individuals > 1:
@@ -181,9 +174,6 @@ class Evolutionary_alghoritm():
             self.elite_individuals = []
             for x in self.best_individuals:
                 self.elite_individuals.append(x)
-            # for x in self.elite_individuals:
-            #     print(self.generation)
-            #     print(x.get_parent_moves())
         self.actual_generation = self.next_generation
         self.next_generation = []
         self.best_individuals = []
@@ -205,25 +195,22 @@ class Evolutionary_alghoritm():
                     ultimate_moves = copy.deepcopy(self.ultimate_individual.get_player_moves())
                     self.ultimate_individual.add_parent_moves(ultimate_moves)
                     moves_did = self.ultimate_individual.get_player_did_moves()
-                    print("ile ruchow zrobil : " + str(moves_did))
-                    print("przed usunieciem : "+ str(len(self.ultimate_individual.get_parent_moves())))
                     if moves_did==2:
                         to_delete = 0 
                     else:
                         to_delete = 3-moves_did
                     for y in range(to_delete):
                         self.ultimate_individual.rem_last_parent_move()
-                    print("przed usunieciem : "+ str(len(self.ultimate_individual.get_parent_moves())))
                     with open('Sequence_that_solved_game.txt', 'w') as file:
                         for item in x.get_parent_moves():
                             file.write(str(item)+'\n')   
-                    print("now, new guy ")      
+                    print("Powtórzenie sekwencji, która jest rozwiązaniem problemu ")      
     def ultimate_indyvidual(self, map_name, map_id) -> None:
         self.actual_generation = []
         new_player = Player(
                             map_name,
                             map_id,
-                            self.ultimate_individual.get_player_wages(),
+                            self.create_wages,
                             0)
         self.actual_generation.append(new_player)
         new_player.set_player_moves(self.ultimate_individual.get_parent_moves())
@@ -244,7 +231,6 @@ class Evolutionary_alghoritm():
                             0)
         self.actual_generation.append(new_player)
         new_player.set_player_moves(self.create_moves_from_file("Sequence_that_solved_game.txt"))
-        self.showout = True
     def testing_if(self, map_name, map_id) -> None:
         self.next_generation = self.actual_generation
         self.actual_generation = []
@@ -297,8 +283,6 @@ class Evolutionary_alghoritm():
         iteration = 0
         list_to_delete = []
         for x in self.actual_generation:
-            print("Starting x : " + str(x.ending_x))
-            print("Ending x : " + str(x.rect.x))
             if x.ending_x != x.rect.x:
                 list_to_delete.append(iteration)
             iteration += 1
@@ -308,8 +292,6 @@ class Evolutionary_alghoritm():
             self.actual_generation.remove(self.actual_generation[x-numb_of_deleted])
             numb_of_deleted += 1
 
-        
-        print("I've deleted " + str(deleted) + " agentow")
         self.best_individuals = self.actual_generation
         self.actual_generation = self.next_generation
         self.next_generation = []
