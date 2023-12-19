@@ -93,6 +93,8 @@ class Evolutionary_alghoritm():
                 self.create_moves(new_player)
                 new_player.starting_x = new_player.rect.x 
                 new_player.starting_y = new_player.rect.y
+                new_player.starting_map = gen_parent.current_map
+                new_player.starting_map_id = gen_parent.current_map_id
                 self.player_id += 1
                 
         elif how_many_seq is None and parents is None and how_many is None: 
@@ -279,8 +281,8 @@ class Evolutionary_alghoritm():
             self.last_testing = True
             for x in self.best_individuals:
                 new_player = Player(
-                            x.current_map,
-                            x.current_map_id,
+                            x.starting_map,
+                            x.starting_map_id,
                             self.create_wages(),
                             0)
                 new_player.moves_list = x.moves_list
