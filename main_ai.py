@@ -1,10 +1,6 @@
 import pygame
-from platform_class import Platforma
-from player_class_ai import Player
-from map_class import Map
 from ai_managment import Evolutionary_alghoritm
 from game_organization_ai import Game_organization_ai
-import time
 
 def check_collision(hero, list_of_objects):
     hero_rect = hero.rect
@@ -73,7 +69,7 @@ ev_alg.create_population(Map_list[0], 0)
 # game loop
 running = True
 while running:
-    if not ev_alg.last_testing:
+    if not ev_alg.testing:
         window.fill((0,0,0)) 
         
     clock.tick(FPS)
@@ -84,7 +80,7 @@ while running:
             move_list = x.get_player_moves()
             move_to_make, how_long = move_list[x.get_player_did_moves()]
             space, right, left = move_to_make
-            if not ev_alg.last_testing:
+            if not ev_alg.testing:
                 x.make_move(move_to_make, how_long)
             else:
                 x.move(move_to_make, how_long)
@@ -94,16 +90,16 @@ while running:
                     x.set_player_did_moves(x.get_player_did_moves()+1)
                 else:
                     x.set_go_next()
-                    if ev_alg.last_testing and ev_alg.get_go_next():
-                        ev_alg.all_good_now()
+                    if ev_alg.testing and ev_alg.get_go_next():
+                        ev_alg.testing_check()
     
     if ev_alg.get_go_next() :
         ev_alg.fitness_n_selection()
 
-    if ev_alg.get_fitness_done() and not ev_alg.last_testing and not ev_alg.all_good:
+    if ev_alg.get_fitness_done() and not ev_alg.testing and not ev_alg.testing_done:
         ev_alg.create_best(Map_list[0], 0)
 
-    if ev_alg.all_good:
+    if ev_alg.testing_done:
         ev_alg.crossover(Map_list[0], 0)
 
     if ev_alg.get_crossover_done():
@@ -141,18 +137,15 @@ while running:
         Background_image = Actual_map.get_bg()
     
     # draw background
-    if ev_alg.last_testing:
+    if ev_alg.testing:
         Actual_map = Map_list[ev_alg.best_individuals[0].current_map_id]
         Background_image = Actual_map.get_bg()
     window.blit(Background_image, (0, 0))
 
-    if not ev_alg.last_testing: 
+    if not ev_alg.testing: 
         for x in list_with_characters:
             if Map_list[current_map] == x.current_map:
                 x.draw(window)
-
-        for x in range(Map_list[current_map].getNumber()):
-            Map_list[current_map].getObject(x).draw(window)
         
         # rendering ui
         g_m.render_ui(window, clock, ev_alg)
@@ -160,14 +153,10 @@ while running:
     else:
         list_with_characters = ev_alg.next_generation
         for x in list_with_characters:
-            x.draw(window)
+            if Map_list[ev_alg.best_individuals[0].current_map_id] == x.current_map:
+                x.draw(window)
 
         g_m.render(window)
-        
-        for x in range(Map_list[current_map].getNumber()):
-            Map_list[ev_alg.best_individuals[0].current_map_id].getObject(x).draw(window)
-    
-   
 
     # event handler
     for event in pygame.event.get():

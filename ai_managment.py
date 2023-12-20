@@ -8,7 +8,6 @@ class Evolutionary_alghoritm():
         self.size_of_generation = number
         self.mutation_rate = 0.2
         self.generation = 0
-        self.player_id = 0
         self.previous_best_score = 100
         self.actual_best_score = 100
         self.actual_generation = []
@@ -20,13 +19,9 @@ class Evolutionary_alghoritm():
         self.crossover_done = False
         self.mutation_done = False
         self.go_next = False
-        self.was_bigger = False
         self.showout = False
-        self.testing = False
         self.testing_done = False
-        self.all_good = False
-        self.last_testing = False
-    def get_ultimate_individual(self):# -> Any | None:
+        self.testing = False
         return self.ultimate_individual
     def get_showout(self) -> bool:
         return self.showout
@@ -85,31 +80,23 @@ class Evolutionary_alghoritm():
                 new_player = Player(
                             gen_parent.get_player_current_map(),
                             gen_parent.get_player_current_map_id(),
-                            gen_parent.get_player_wages(),
-                            self.player_id)
+                            gen_parent.get_player_wages())
                 self.next_generation.append(new_player)
                 new_player.set_parent_moves(gen_parent_moves)
                 new_player.update_rect(gen_parent.get_player_xy())
                 self.create_moves(new_player)
-                new_player.starting_x = new_player.rect.x 
-                new_player.starting_y = new_player.rect.y
-                self.player_id += 1
                 
         elif how_many_seq is None and parents is None and how_many is None: 
             for x in range(self.size_of_generation):
                 new_player = Player(
                             actual_map,
                             actual_map_id,
-                            self.create_wages(),
-                            self.player_id)
+                            self.create_wages(),)
                 self.create_moves(new_player)
                 if self.generation == 0:
                     self.actual_generation.append(new_player)
                 else:
-                    self.next_generation.append(new_player) 
-                new_player.starting_x = new_player.rect.x 
-                new_player.starting_y = new_player.rect.y 
-                self.player_id += 1             
+                    self.next_generation.append(new_player)            
     def fitness_n_selection(self):
         self.generation += 1
         best_indyviduals = sorted(self.actual_generation, 
@@ -181,11 +168,8 @@ class Evolutionary_alghoritm():
         self.crossover_done = False
         self.mutation_done = False
         self.go_next = False 
-        self.testing = False
         self.testing_done = False
-        self.player_id = 0
-        self.all_good = False
-        self.last_testing = False
+        self.testing = False
     def alghoritm_end(self, map, final_object) -> None:
         for x in self.actual_generation:
             if pygame.Rect.colliderect(x.get_player_rect(), final_object.get_rect()) and map == x.get_player_current_map():
@@ -210,10 +194,10 @@ class Evolutionary_alghoritm():
         new_player = Player(
                             map_name,
                             map_id,
-                            self.create_wages,
-                            0)
+                            self.create_wages)
         self.actual_generation.append(new_player)
         new_player.set_player_moves(self.ultimate_individual.get_parent_moves())
+        self.showout = False
     def create_moves_from_file(self, filename):# -> list:
         lines = []
         lines_after_ev = []
@@ -231,28 +215,6 @@ class Evolutionary_alghoritm():
                             0)
         self.actual_generation.append(new_player)
         new_player.set_player_moves(self.create_moves_from_file("Sequence_that_solved_game.txt"))
-    def testing_if(self, map_name, map_id) -> None:
-        self.next_generation = self.actual_generation
-        self.actual_generation = []
-        self.go_next = False
-        self.testing = True
-        self.testing_done = False
-        which_list = []
-        if len(self.best_individuals) > 0:
-            which_list = self.best_individuals
-        else:
-            which_list = self.elite_individuals
-
-        for x in which_list:
-            moves = x.parent_moves
-            new_player = Player(
-                            map_name,
-                            map_id,
-                            self.create_wages(),
-                            0)
-            self.actual_generation.append(new_player)
-            new_player.set_player_moves(moves)
-    def testing_done_func(self) -> None:
         self.actual_generation = self.next_generation
         self.next_generation = []
         self.testing = False
@@ -262,13 +224,12 @@ class Evolutionary_alghoritm():
             self.next_generation = self.actual_generation
             self.actual_generation = []
             self.go_next = False
-            self.last_testing = True
+            self.testing = True
             for x in self.best_individuals:
                 new_player = Player(
                             actual_map,
                             actual_map_id,
-                            self.create_wages(),
-                            0)
+                            self.create_wages())
                 new_player.moves_list = x.parent_moves
                 new_player.rect.x = 608
                 new_player.rect.y = 572
@@ -278,8 +239,8 @@ class Evolutionary_alghoritm():
                 self.actual_generation.append(new_player)
             
         else:
-            self.all_good = True
-    def all_good_now(self):
+            self.testing_done = True
+    def testing_check(self):
         iteration = 0
         list_to_delete = []
         for x in self.actual_generation:
@@ -295,5 +256,5 @@ class Evolutionary_alghoritm():
         self.best_individuals = self.actual_generation
         self.actual_generation = self.next_generation
         self.next_generation = []
-        self.last_testing = False
-        self.all_good = True
+        self.testing = False
+        self.testing_done = True
