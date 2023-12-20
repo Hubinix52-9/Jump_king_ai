@@ -35,10 +35,6 @@ class Game_organization_ai():
         fps_text = self.font.render("Fps : "+str(fps), True, (255,255,255))
         window.blit(fps_text, (550, 715))
 
-<<<<<<< HEAD
-
-=======
->>>>>>> d3a83c1dfc53964b859ce7830592c1704cae7794
     def maps(self):
         # maps defining
         Map1 = Map('assets/map1.png', self.screen_w, self.screen_h)
