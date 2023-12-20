@@ -7,15 +7,8 @@ class Game_organization_ai():
     def __init__(self, scr_w, scr_h) -> None:
         self.screen_w = scr_w
         self.screen_h = scr_h
-        self.stop_flag = False
-        self.last_gen_flag = False
-        self.checkout_flag = False
         self.destination = None
         self.map_list = []
-        self.button_list = []
-        self.b_functions_list = []
-        self.b_names = []
-        self.b_names_cord = []
         self.font = pygame.font.Font(None, 35)
         self.bfont = pygame.font.Font(None, 60)
         self.maps()

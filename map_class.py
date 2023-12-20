@@ -14,11 +14,6 @@ class Map:
     def getObject(self, id):
         return self.list[id]
 
-    def getNumber(self):
-        return len(self.list)
-
     def get_bg(self):
         return self.scaled_image
 
-    def clear(self):
-        self.list = []

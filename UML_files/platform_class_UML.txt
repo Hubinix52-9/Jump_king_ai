@@ -1,16 +1,15 @@
-@startuml
 class Platforma {
-    get_x()
-    get_y()
-    get_width()
-    get_height()
-    get_rect()
-    draw()
-        x
-    y
-    width
-    height
-    rect
-    __init__()
+    - x : int
+    - y : int
+    - width : int
+    - height : int
+    - rect : Rect
+    ------------------
+    + __init__() -> none
+    + get_x() -> int
+    + get_y() -> int
+    + get_width() -> int
+    + get_height() -> int
+    + get_rect(...) -> Rect
+    
 }
-@enduml

@@ -1,12 +1,11 @@
-@startuml
 class Map {
-    add()
-    getObject()
-    getNumber()
-    get_bg()
-    clear()
-        image
-    scaled_image
-    __init__()
+    - list : list
+    - image : Surface
+    - scaled_image : Surface
+    ---------------------------
+    + __init__() -> none
+    + add(...) -> none
+    + getObject(...) -> Platform
+    + getNumber() -> int
+    + get_bg() -> Surface
 }
-@enduml
