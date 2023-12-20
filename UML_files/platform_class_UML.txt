@@ -1,0 +1,15 @@
+class Platforma {
+    - x : int
+    - y : int
+    - width : int
+    - height : int
+    - rect : Rect
+    ------------------
+    + __init__() -> none
+    + get_x() -> int
+    + get_y() -> int
+    + get_width() -> int
+    + get_height() -> int
+    + get_rect(...) -> Rect
+    
+}

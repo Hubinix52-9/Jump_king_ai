@@ -1,0 +1,13 @@
+class Game_organization_ai {
+    - screen_w : int
+    - screen_h : int
+    - destination : Platform
+    - map_list : list
+    - font : Font
+    - bfont : Font
+    ------------------
+    + __init__(...) -> none
+    + render(...) -> none
+    + render_ui(...) -> none
+    + maps() -> none 
+}

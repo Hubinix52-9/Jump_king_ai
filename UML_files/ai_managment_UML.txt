@@ -1,0 +1,42 @@
+
+class Evolutionary_alghoritm {
+    - size_of_generation : int
+    - mutation_rate : float
+    - generation : int
+    - previous_best_score : int
+    - actual_best_score : int
+    - actual_generation : list
+    - next_generation : list
+    - best_individuals : list
+    - elite_individuals : list
+    - ultimate_individual : Player
+    - fitness_done : boolean
+    - crossover_done : boolean
+    - mutation_done : boolean
+    - go_next : boolean
+    - showout : boolean
+    - testing_done : boolean
+    - testing : boolean
+    ------------------------
+    + __init__()
+    + get_showout() -> bool 
+    + get_elite() -> list 
+    + get_generation() -> int 
+    + get_mutation_done() -> bool 
+    + get_crossover_done() -> bool 
+    + get_fitness_done() -> bool 
+    + get_actual_gen() -> list 
+    + get_go_next() -> bool 
+    + create_wages() -> none 
+    + create_moves(...) -> none 
+    + create_population(...) -> none 
+    + crossover(...) -> none 
+    + mutation() -> none 
+    + prep_for_next_gen() -> none 
+    + alghoritm_end(...) -> none 
+    + ultimate_indyvidual(...) -> none 
+    + create_moves_from_file(...) -> none
+    + create_from_file(...) -> none 
+    + create_best(...) -> none 
+    + testing_check() -> none 
+}
