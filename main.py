@@ -77,7 +77,7 @@ window = pygame.display.set_mode((SCREEN_WIDTH+200, SCREEN_HEIGHT))
 pygame.display.set_caption('AI_test')
 
 # maps
-Map1 = Map('assets/block.png', SCREEN_WIDTH, SCREEN_HEIGHT)
+Map1 = Map('assets/map1.png', SCREEN_WIDTH, SCREEN_HEIGHT)
 Map2 = Map('assets/block3.png', SCREEN_WIDTH, SCREEN_HEIGHT)
 Map3 = Map('assets/block5.png', SCREEN_WIDTH, SCREEN_HEIGHT)
 Map4 = Map('assets/block7.png', SCREEN_WIDTH, SCREEN_HEIGHT)
@@ -87,11 +87,11 @@ Map_list = [Map1, Map2, Map3, Map4]
 # map 1
 m1_p1 = Platforma(0, SCREEN_HEIGHT, SCREEN_WIDTH, 100)
 m1_p2 = Platforma(130, SCREEN_HEIGHT-150, 100, 25)
-m1_p3 = Platforma(330, SCREEN_HEIGHT-200, 100, 25)
-m1_p4 = Platforma(350, SCREEN_HEIGHT-400, 200, 25)
+m1_p3 = Platforma(330, SCREEN_HEIGHT-180, 100, 25)
+m1_p4 = Platforma(350, SCREEN_HEIGHT-380, 200, 25)
 m1_p5 = Platforma(30, SCREEN_HEIGHT-300, 150, 25)
-m1_p6 = Platforma(100, SCREEN_HEIGHT-500, 100, 25)
-m1_p7 = Platforma(320, SCREEN_HEIGHT-600, 100, 25)
+m1_p6 = Platforma(100, SCREEN_HEIGHT-480, 200, 25)
+m1_p7 = Platforma(320, SCREEN_HEIGHT-580, 150, 25)
 
 Map1.add(m1_p1)
 Map1.add(m1_p2)
@@ -105,7 +105,7 @@ Map1.add(m1_p7)
 m2_p1 = Platforma(100, SCREEN_HEIGHT-250, 150, 25)
 m2_p2 = Platforma(0, SCREEN_HEIGHT-100, 150, 25)
 m2_p3 = Platforma(250, SCREEN_HEIGHT-550, 200, 25)
-m2_p4 = Platforma(430, SCREEN_HEIGHT-340, 50, 25)
+m2_p4 = Platforma(380, SCREEN_HEIGHT-340, 120, 25)
 m2_p5 = Platforma(550, SCREEN_HEIGHT-450, 120, 25)
 
 Map2.add(m2_p1)
@@ -115,10 +115,10 @@ Map2.add(m2_p4)
 Map2.add(m2_p5)
 
 # map 3
-m3_p1 = Platforma(300, SCREEN_HEIGHT-510, 100, 25)
-m3_p2 = Platforma(100, SCREEN_HEIGHT-350, 75, 25)
-m3_p3 = Platforma(500, SCREEN_HEIGHT-250, 150, 25)
-m3_p4 = Platforma(50, SCREEN_HEIGHT-100, 150, 25)
+m3_p1 = Platforma(0, SCREEN_HEIGHT-100, 200, 25)
+m3_p2 = Platforma(450, SCREEN_HEIGHT-250, 200, 25)
+m3_p3 = Platforma(50, SCREEN_HEIGHT-350, 200, 25)
+m3_p4 = Platforma(320, SCREEN_HEIGHT-490, 130, 25)
 
 Map3.add(m3_p1)
 Map3.add(m3_p2)
@@ -126,20 +126,22 @@ Map3.add(m3_p3)
 Map3.add(m3_p4)
 
 # map 4
-m4_p0 = Platforma(250, SCREEN_HEIGHT-550, 100, 25)
-m4_p1 = Platforma(450, SCREEN_HEIGHT-450, 100, 25)
-m4_p2 = Platforma(200, SCREEN_HEIGHT-350, 55, 25)
-m4_p3 = Platforma(20, SCREEN_HEIGHT-250, 50, 25)
-m4_p4 = Platforma(150, SCREEN_HEIGHT-200, 150, 25)
-m4_p5 = Platforma(550, SCREEN_HEIGHT-5, 100, 25)
-final = Platforma(400, SCREEN_HEIGHT-150, 50, 25)
+m4_p1 = Platforma(550, SCREEN_HEIGHT-5, 100, 25)
+m4_p2 = Platforma(400, SCREEN_HEIGHT-150, 50, 25)
+m4_p3 = Platforma(150, SCREEN_HEIGHT-200, 150, 25)
+m4_p4 = Platforma(20, SCREEN_HEIGHT-250, 50, 25)
+m4_p5 = Platforma(200, SCREEN_HEIGHT-350, 100, 25)
+m4_p6 = Platforma(450, SCREEN_HEIGHT-450, 140, 25)
+m4_p7 = Platforma(220, SCREEN_HEIGHT-550, 130, 25)
+final = Platforma(270, SCREEN_HEIGHT-555, 40, 25)
 
-Map4.add(m4_p0)
 Map4.add(m4_p1)
 Map4.add(m4_p2)
 Map4.add(m4_p3)
 Map4.add(m4_p4)
 Map4.add(m4_p5)
+Map4.add(m4_p6)
+Map4.add(m4_p7)
 Map4.add(final) 
 
 # map and image
@@ -190,7 +192,7 @@ while running:
 
     for x in range(Actual_map.getNumber()):
         obj = Actual_map.getObject(x)
-        #obj.draw(window)
+        obj.draw(window)
 
     # event handler
     for event in pygame.event.get():
