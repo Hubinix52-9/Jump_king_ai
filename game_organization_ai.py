@@ -72,10 +72,10 @@ class Game_organization_ai():
 
     def maps(self):
         # maps defining
-        Map1 = Map('assets/block.png', self.screen_w, self.screen_h)
-        Map2 = Map('assets/block3.png', self.screen_w, self.screen_h)
-        Map3 = Map('assets/block5.png', self.screen_w, self.screen_h)
-        Map4 = Map('assets/block7.png', self.screen_w, self.screen_h)
+        Map1 = Map('assets/map1.png', self.screen_w, self.screen_h)
+        Map2 = Map('assets/map2.png', self.screen_w, self.screen_h)
+        Map3 = Map('assets/map3.png', self.screen_w, self.screen_h)
+        Map4 = Map('assets/map4.png', self.screen_w, self.screen_h)
 
         # map 1
         m1_p1 = Platforma(0, self.screen_h, self.screen_w, 100)
