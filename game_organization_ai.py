@@ -17,9 +17,12 @@ class Game_organization_ai():
         self.b_names = []
         self.b_names_cord = []
         self.font = pygame.font.Font(None, 35)
-        self.buttons_functions()
+        self.bfont = pygame.font.Font(None, 60)
         self.maps()
-        self.buttons()
+
+    def render(self, window):
+        text_render = self.bfont.render("Validating", True, (255,255,255))
+        window.blit(text_render, (235, 715))
 
     def render_ui(self, window, clock, ev):
         text_render = self.font.render("Generacja: "+str(ev.get_generation()), True, (255,255,255))
@@ -45,30 +48,6 @@ class Game_organization_ai():
         for x in range(len(self.b_names)):
             window.blit(self.b_names[x], self.b_names_cord[x] )
 
-         
-    def buttons(self):
-        last_gen_button = pygame.Rect(700, 30, 210, 50) 
-        do_check_button = pygame.Rect(700, 130, 210, 50)
-        stop_button = pygame.Rect(700, 230, 210, 50)
-
-        self.button_list = [last_gen_button, do_check_button, stop_button]
-
-        last_gen_b_name = self.font.render("Last gen again", True, (0,0,0))
-        do_check_b_name = self.font.render("Testing on", True, (0,0,0))
-        stop_b_name = self.font.render("Stop", True, (0,0,0))
-
-        self.b_names = [last_gen_b_name, do_check_b_name, stop_b_name]
-
-        self.b_names_cord = [(710, 45), (710, 145), (710, 245)]
-    
-    def buttons_functions(self):
-        def set_checkout_flag():
-            self.checkout_flag = not self.checkout_flag
-        def set_stop_flag():
-            self.stop_flag = not self.stop_flag
-        def last_gen():
-            pass
-        self.b_functions_list = [last_gen, set_checkout_flag, set_stop_flag]
 
     def maps(self):
         # maps defining

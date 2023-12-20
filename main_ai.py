@@ -52,16 +52,12 @@ clock = pygame.time.Clock()
 FPS = 50
 
 # create game window  
-window = pygame.display.set_mode((SCREEN_WIDTH+250, SCREEN_HEIGHT+100))
+window = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT+100))
 pygame.display.set_caption('AI Solving Platform Game')
 
 # game managment class
 g_m = Game_organization_ai(SCREEN_WIDTH, SCREEN_HEIGHT)
 Map_list = g_m.map_list
-
-# buttons
-button_list = g_m.button_list
-b_func_list = g_m.b_functions_list
 
 # map and image
 Actual_map = Map_list[0]
@@ -77,80 +73,50 @@ ev_alg.create_population(Map_list[0], 0)
 # game loop
 running = True
 while running:
-    do_checkout = g_m.checkout_flag
-    stop_flag = g_m.stop_flag
-    
-    window.fill((0,0,0)) 
-    if not stop_flag:
-        clock.tick(FPS)
-        list_with_characters = ev_alg.get_actual_gen()
-        for x in list_with_characters:
-            if not x.get_go_next():
-                
-                move_list = x.get_player_moves()
-                #print(len(move_list))
-                move_to_make, how_long = move_list[x.get_player_did_moves()]
-                space, right, left = move_to_make
-                if not ev_alg.last_testing:
-                    x.make_move(move_to_make, how_long)
-                else:
-                    print(x.moves_did)
-                    x.move(move_to_make, how_long)
-                check_collision(x, x.current_map)
-                if (x.get_player_landed() and space and not x.get_player_charging()) or (not x.get_player_steping() and (right or left) and not space):
-                    # if len(ev_alg.actual_generation) < 30:
-                    #     print(move_to_make, how_long)
-                    #     print(x.get_player_did_moves())
-                    if len(move_list)-1 > x.get_player_did_moves():
-                        x.set_player_did_moves(x.get_player_did_moves()+1)
-                    else:
-                        x.set_go_next()
-                        if do_checkout:
-                            if ev_alg.testing and ev_alg.get_go_next():
-                                time.sleep(2)
-                                ev_alg.testing_done_func()
-                        if ev_alg.last_testing and ev_alg.get_go_next():
-                            time.sleep(2)
-                            print("was there")
-                            ev_alg.all_good_now()
+    if not ev_alg.last_testing:
+        window.fill((0,0,0)) 
         
-        if not ev_alg.get_showout() and not ev_alg.testing:
-            if ev_alg.get_go_next() and not ev_alg.testing_done :
-                time.sleep(2)
-                ev_alg.fitness_n_selection()
-
-
-                
-            if not do_checkout:
-                if ev_alg.get_fitness_done() and not ev_alg.last_testing and not ev_alg.all_good:
-                    ev_alg.create_best(Map_list[0], 0)
-                if ev_alg.all_good:
-                    print("was here")
-                    ev_alg.crossover(Map_list[0], 0)
-
-                
-
-            if do_checkout:
-                if ev_alg.get_fitness_done() and not ev_alg.testing_done:
-                    ev_alg.testing_if(Map_list[0], 0)
-                
-                if ev_alg.testing_done and not ev_alg.last_testing:
-                    ev_alg.create_best()
-
-                if ev_alg.all_good:    
-                    ev_alg.crossover(Map_list[0], 0)
+    clock.tick(FPS)
+    list_with_characters = ev_alg.get_actual_gen()
+    for x in list_with_characters:
+        if not x.get_go_next():
             
-            if ev_alg.get_crossover_done():
-                ev_alg.mutation()
+            move_list = x.get_player_moves()
+            move_to_make, how_long = move_list[x.get_player_did_moves()]
+            space, right, left = move_to_make
+            if not ev_alg.last_testing:
+                x.make_move(move_to_make, how_long)
+            else:
+                x.move(move_to_make, how_long)
+            check_collision(x, x.current_map)
+            if (x.get_player_landed() and space and not x.get_player_charging()) or (not x.get_player_steping() and (right or left) and not space):
+                if len(move_list)-1 > x.get_player_did_moves():
+                    x.set_player_did_moves(x.get_player_did_moves()+1)
+                else:
+                    x.set_go_next()
+                    if ev_alg.last_testing and ev_alg.get_go_next():
+                        ev_alg.all_good_now()
+    
+    if ev_alg.get_go_next() :
+        ev_alg.fitness_n_selection()
 
-            if ev_alg.get_mutation_done():
-                ev_alg.prep_for_next_gen()
-                do_checkout = False
+    if ev_alg.get_fitness_done() and not ev_alg.last_testing and not ev_alg.all_good:
+        ev_alg.create_best(Map_list[0], 0)
 
-            ev_alg.alghoritm_end(Map_list[3], g_m.destination)
+    if ev_alg.all_good:
+        ev_alg.crossover(Map_list[0], 0)
 
-            if ev_alg.get_showout():
-                ev_alg.ultimate_indyvidual(Map_list[0], 0)
+    if ev_alg.get_crossover_done():
+        ev_alg.mutation()
+
+    if ev_alg.get_mutation_done():
+        ev_alg.prep_for_next_gen()
+        do_checkout = False
+
+    ev_alg.alghoritm_end(Map_list[3], g_m.destination)
+
+    if ev_alg.get_showout():
+        ev_alg.ultimate_indyvidual(Map_list[0], 0)
 
 
     # map tracing
@@ -173,29 +139,40 @@ while running:
         
         Actual_map = Map_list[current_map]
         Background_image = Actual_map.get_bg()
-
+    
     # draw background
+    if ev_alg.last_testing:
+        Actual_map = Map_list[ev_alg.best_individuals[0].current_map_id]
+        Background_image = Actual_map.get_bg()
     window.blit(Background_image, (0, 0))
 
-    # draw sprites
-    for x in list_with_characters:
-        if Map_list[current_map] == x.current_map:
+    if not ev_alg.last_testing: 
+        for x in list_with_characters:
+            if Map_list[current_map] == x.current_map:
+                x.draw(window)
+
+        for x in range(Map_list[current_map].getNumber()):
+            Map_list[current_map].getObject(x).draw(window)
+        
+        # rendering ui
+        g_m.render_ui(window, clock, ev_alg)
+
+    else:
+        list_with_characters = ev_alg.next_generation
+        for x in list_with_characters:
             x.draw(window)
 
-    for x in range(Map_list[current_map].getNumber()):
-        Map_list[current_map].getObject(x).draw(window)
-
-    # rendering ui
-    g_m.render_ui(window, clock, ev_alg)
+        g_m.render(window)
+        
+        for x in range(Map_list[current_map].getNumber()):
+            Map_list[ev_alg.best_individuals[0].current_map_id].getObject(x).draw(window)
+    
+   
 
     # event handler
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            for x in range(len(button_list)):
-                if button_list[x].collidepoint(event.pos):
-                    b_func_list[x]()
 
     # update display window
     pygame.display.update()
