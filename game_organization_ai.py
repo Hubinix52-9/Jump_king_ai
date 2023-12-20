@@ -35,12 +35,6 @@ class Game_organization_ai():
         fps_text = self.font.render("Fps : "+str(fps), True, (255,255,255))
         window.blit(fps_text, (550, 715))
 
-        for x in self.button_list:
-            pygame.draw.rect(window, (255,255,255), x) 
-        
-        for x in range(len(self.b_names)):
-            window.blit(self.b_names[x], self.b_names_cord[x] )
-
 
     def maps(self):
         # maps defining
